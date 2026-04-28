@@ -208,3 +208,30 @@ See [`docs/SAGE_INTEGRATION_PLAN.md`](docs/SAGE_INTEGRATION_PLAN.md) for the ful
 - [ ] Reports page → all charts load with data
 - [ ] Weekly Timecards → select week, see all employees, navigate prev/next week
 - [ ] Weekly Timecards → filter by employee, job, status
+
+## Screenshots
+
+### Admin Dashboard
+![Admin Dashboard](./screenshots/01-dashboard.png)
+
+### Crew Scheduling Board
+![Crew Scheduling Board](./screenshots/02-crew-schedule.png)
+
+### Worker Clock In / Clock Out
+![Worker Dashboard](./screenshots/03-worker-dashboard.png)
+
+### Supervisor Daily Review
+![Daily Review](./screenshots/04-daily-review.png)
+
+### Weekly Timecard Review
+![Weekly Timecards](./screenshots/05-weekly-timecards.png)
+
+### Paynet Export Readiness
+![Paynet Export Readiness](./screenshots/06-paynet-export-readiness.png)
+
+### Job Costing Dashboard
+![Job Costing Dashboard](./screenshots/07-job-costing.png)
+
+### Sage Integration Center
+![Sage Integration Center](./screenshots/08-integration-center.png)
+
