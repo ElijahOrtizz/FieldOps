@@ -2,7 +2,17 @@
 
 **FieldOps** is a full-stack construction operations platform for small-to-mid contractors. It connects crew scheduling, worker time tracking, supervisor daily review, weekly payroll approval, job costing, and Sage-ready payroll workflows into one clean system.
 
-The goal is simple: help contractors move from field work to clean payroll and job-cost visibility without relying on paper timecards, text messages, spreadsheets, or disconnected tools.
+FieldOps is designed to help contractors move from field work to clean payroll and job-cost visibility without relying on paper timecards, text messages, spreadsheets, or disconnected tools.
+
+---
+
+## Demo Video
+
+A walkthrough demo of FieldOps is available here:
+
+[Watch / download the FieldOps demo video](docs/demo/fieldops-demo.mov)
+
+> Note: The demo video is stored with Git LFS. If GitHub does not preview it in-browser, click the link and use the download/raw option.
 
 ---
 
@@ -130,8 +140,7 @@ FieldOps is built for construction companies with roughly **20–250 field worke
 - React
 - Vite
 - JavaScript
-- Modern component-based UI
-- Responsive dashboard layout
+- Responsive dashboard UI
 
 ### Backend
 
@@ -178,6 +187,9 @@ fieldops/
 │       └── utils/
 │
 ├── docs/
+│   └── demo/
+│       └── fieldops-demo.mov
+│
 └── README.md
 ```
 
@@ -327,7 +339,7 @@ This makes FieldOps useful to foremen, payroll admins, and owners without requir
 
 ## Current Status
 
-FieldOps is an active full-stack MVP. The current version demonstrates the main field-to-payroll workflow locally, including scheduling, time tracking, supervisor review, payroll approval, and Sage-ready export/sync structure.
+FieldOps is an active full-stack MVP. The current version demonstrates the main field-to-payroll workflow locally, including scheduling, time tracking, supervisor review, payroll approval, job costing, and Sage-ready export/sync structure.
 
 ---
 
