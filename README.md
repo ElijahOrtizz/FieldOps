@@ -15,7 +15,8 @@ FieldOps is designed to help contractors move from field work to clean payroll a
 </p>
 
 <p align="center">
-  🎥 <strong>Click the image above to watch the FieldOps demo</strong>
+  🎥 <strong>Click the image above to watch the demo on YouTube</strong><br>
+  <sub>(Tip: Ctrl/Cmd + Click to open in a new tab)</sub>
 </p>
 
 
