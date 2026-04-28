@@ -8,11 +8,12 @@ FieldOps is designed to help contractors move from field work to clean payroll a
 
 ## Demo Video
 
+
+
 A walkthrough demo of FieldOps is available here:
 
-[Watch / download the FieldOps demo video](docs/demo/fieldops-demo.mov)
+https://youtu.be/mNq2MaEQ_AQ
 
-> Note: The demo video is stored with Git LFS. If GitHub does not preview it in-browser, click the link and use the download/raw option.
 
 ---
 
