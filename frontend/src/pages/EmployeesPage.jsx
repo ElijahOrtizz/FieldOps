@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { employeesApi } from '../utils/api'
 import { PageHeader, EmptyState, LoadingSpinner, Modal } from '../components/common'
-import { Users, Plus, Edit2, UserX } from 'lucide-react'
+import { Users, Plus, Edit2, UserX, Search } from 'lucide-react'
 
 const TRADES = ['Laborer', 'Carpenter', 'Foreman', 'Electrician', 'Plumber', 'Ironworker', 'Equipment Operator', 'Mason', 'Drywaller', 'Painter']
 
@@ -100,6 +100,16 @@ export default function EmployeesPage() {
   const [employees, setEmployees] = useState([])
   const [loading, setLoading] = useState(true)
   const [modal, setModal] = useState(null) // null | 'create' | employee obj
+  const [search, setSearch] = useState('')
+  const [roleFilter, setRoleFilter] = useState('')
+
+  const filtered = employees.filter(emp => {
+    const matchesSearch = !search ||
+      emp.full_name?.toLowerCase().includes(search.toLowerCase()) ||
+      emp.employee_number?.toLowerCase().includes(search.toLowerCase())
+    const matchesRole = !roleFilter || emp.user_role === roleFilter
+    return matchesSearch && matchesRole
+  })
 
   const load = () => {
     setLoading(true)
@@ -128,6 +138,24 @@ export default function EmployeesPage() {
         }
       />
 
+      <div className="flex gap-3 mb-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+          <input
+            className="input pl-9"
+            placeholder="Search by name or employee #..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+        </div>
+        <select className="input w-40" value={roleFilter} onChange={e => setRoleFilter(e.target.value)}>
+          <option value="">All roles</option>
+          <option value="admin">Admin</option>
+          <option value="supervisor">Supervisor</option>
+          <option value="worker">Worker</option>
+        </select>
+      </div>
+
       {loading ? (
         <div className="flex justify-center py-16"><LoadingSpinner size="lg" /></div>
       ) : (
@@ -151,7 +179,7 @@ export default function EmployeesPage() {
                 </tr>
               </thead>
               <tbody>
-                {employees.map(emp => (
+                {filtered.map(emp => (
                   <tr key={emp.id} className={`table-row ${!emp.is_active ? 'opacity-50' : ''}`}>
                     <td className="td">
                       <p className="font-medium text-slate-200">{emp.full_name}</p>
