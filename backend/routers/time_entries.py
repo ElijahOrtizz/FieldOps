@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, validator
 from typing import Optional, List
-from datetime import date
+from datetime import date, timedelta, datetime, timezone
 import os, uuid, shutil
 from database import get_db
 import models
@@ -204,6 +204,35 @@ def create_time_entry(
 
     _validate_times(data.start_time, data.end_time, data.total_hours)
 
+    # Hours cap
+    if data.total_hours > 16:
+        raise HTTPException(status_code=400, detail="Cannot log more than 16 hours in a single entry")
+
+    # Date window — no future dates, no more than 14 days in the past
+    today = date.today()
+    if data.date > today:
+        raise HTTPException(status_code=400, detail="Cannot log hours for a future date")
+    if data.date < today - timedelta(days=14):
+        raise HTTPException(status_code=400, detail="Cannot log hours more than 14 days in the past")
+
+    # Duplicate check — catch accidental double-clicks only (within 60 seconds).
+    # Workers can legitimately add hours to the same job/day; only block rapid re-submissions.
+    # Rejected entries are always excluded — worker is expected to resubmit.
+    window_start = datetime.now(timezone.utc) - timedelta(seconds=60)
+    recent_duplicate = db.query(models.TimeEntry).filter(
+        models.TimeEntry.employee_id == emp.id,
+        models.TimeEntry.date == data.date,
+        models.TimeEntry.job_id == data.job_id,
+        models.TimeEntry.cost_code_id == data.cost_code_id,
+        models.TimeEntry.status != "rejected",
+        models.TimeEntry.created_at >= window_start,
+    ).first()
+    if recent_duplicate:
+        raise HTTPException(
+            status_code=400,
+            detail="Duplicate submission detected. If you meant to log additional hours, wait a moment and try again."
+        )
+
     job = db.query(models.Job).filter(models.Job.id == data.job_id).first()
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
@@ -254,8 +283,13 @@ def update_time_entry(
         emp = current_user.employee
         if not emp or entry.employee_id != emp.id:
             raise HTTPException(status_code=403, detail="Not your entry")
-        if cur_status not in ["submitted", "rejected"]:
-            raise HTTPException(status_code=400, detail="Cannot edit approved or exported entries")
+        if cur_status == "approved":
+            raise HTTPException(
+                status_code=403,
+                detail="Approved entries cannot be edited. Contact your supervisor for corrections."
+            )
+        if cur_status not in ["submitted", "rejected", "needs_correction"]:
+            raise HTTPException(status_code=400, detail="Cannot edit exported entries")
 
     # Exported entry warning — non-admin cannot edit at all
     if cur_status == "exported" and not (is_admin and force):
@@ -327,6 +361,11 @@ def delete_time_entry(
         if not emp or entry.employee_id != emp.id:
             raise HTTPException(status_code=403, detail="Not your entry")
         cur_status = entry.status.value if hasattr(entry.status, "value") else str(entry.status)
+        if cur_status == "approved":
+            raise HTTPException(
+                status_code=403,
+                detail="Approved entries cannot be edited. Contact your supervisor for corrections."
+            )
         if cur_status not in ["submitted"]:
             raise HTTPException(status_code=400, detail="Cannot delete approved entries")
     db.delete(entry)

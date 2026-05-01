@@ -76,10 +76,11 @@ export default function WeekStatusStrip({ days, otBreakdown }) {
                   'flex flex-col items-center py-3 px-1.5 rounded-xl',
                   'w-[52px] sm:w-auto min-h-[80px]',
                   'transition-all cursor-pointer select-none',
+                  'border-t-2',
                   'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-1',
                   day.is_today
-                    ? 'ring-2 ring-brand-500 dark:ring-brand-400 bg-brand-50 dark:bg-brand-900/20 hover:bg-brand-100 dark:hover:bg-brand-900/30'
-                    : 'bg-gray-50 dark:bg-slate-800/40 hover:bg-gray-100 dark:hover:bg-slate-800 hover:shadow-sm',
+                    ? 'border-brand-500 dark:border-brand-400 bg-brand-50 dark:bg-brand-900/20 hover:bg-brand-100 dark:hover:bg-brand-900/30'
+                    : 'border-transparent bg-gray-50 dark:bg-slate-800/40 hover:bg-gray-100 dark:hover:bg-slate-800 hover:shadow-sm',
                 ].join(' ')}
               >
                 {/* Day abbreviation */}

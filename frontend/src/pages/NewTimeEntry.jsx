@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { jobsApi, costCodesApi, timeEntriesApi } from '../utils/api'
 import { PageHeader } from '../components/common'
 import { CheckCircle2, Clock, AlertCircle } from 'lucide-react'
-import { format } from 'date-fns'
+import { format, parseISO, differenceInDays } from 'date-fns'
 
 export default function NewTimeEntry() {
   const navigate = useNavigate()
@@ -57,8 +57,22 @@ export default function NewTimeEntry() {
     setForm(updated)
   }
 
+  const validate = () => {
+    const h = parseFloat(form.total_hours)
+    if (!h || h <= 0) return 'Hours must be greater than 0'
+    if (h > 16) return 'Cannot log more than 16 hours in a single entry'
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const entryDate = parseISO(form.date)
+    if (entryDate > today) return 'Cannot log hours for a future date'
+    if (differenceInDays(today, entryDate) > 14) return 'Cannot log hours more than 14 days in the past'
+    return null
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
+    const validationError = validate()
+    if (validationError) { setError(validationError); return }
     setError('')
     setLoading(true)
     try {
