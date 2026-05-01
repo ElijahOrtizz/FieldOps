@@ -6,6 +6,90 @@ import { StatCard, StatusBadge, PageHeader, LoadingSpinner } from '../components
 import { Clock, Plus, CheckCircle2, TrendingUp, CalendarRange, MapPin, LogIn, LogOut, AlertCircle } from 'lucide-react'
 import { format } from 'date-fns'
 
+// ── Correction Request Modal ──────────────────────────────────────────────
+function CorrectionModal({ entry, jobs, onClose }) {
+  const [reason, setReason] = useState('')
+  const [reqStart, setReqStart] = useState('')
+  const [reqEnd, setReqEnd] = useState('')
+  const [reqJobId, setReqJobId] = useState('')
+  const [reqNotes, setReqNotes] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [done, setDone] = useState(false)
+  const [err, setErr] = useState('')
+
+  const submit = async () => {
+    if (!reason.trim()) { setErr('Reason is required'); return }
+    setSaving(true); setErr('')
+    try {
+      await workerApi.requestCorrection({
+        time_entry_id: entry.id,
+        reason,
+        requested_start_time: reqStart || undefined,
+        requested_end_time: reqEnd || undefined,
+        requested_job_id: reqJobId ? Number(reqJobId) : undefined,
+        requested_notes: reqNotes || undefined,
+      })
+      setDone(true)
+      setTimeout(onClose, 1800)
+    } catch (e) {
+      setErr(e.response?.data?.detail || 'Failed to submit')
+    } finally { setSaving(false) }
+  }
+
+  if (done) return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
+      <div className="bg-slate-900 border border-emerald-500/30 rounded-xl w-full max-w-sm p-6 text-center">
+        <p className="text-emerald-400 font-semibold text-sm">✓ Correction request submitted</p>
+        <p className="text-slate-500 text-xs mt-1">Your supervisor will review it.</p>
+      </div>
+    </div>
+  )
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
+      <div className="bg-slate-900 border border-slate-700 rounded-xl w-full max-w-sm p-5 shadow-2xl">
+        <h3 className="font-semibold text-slate-100 mb-1">Request Correction</h3>
+        <p className="text-xs text-slate-500 mb-4">
+          Entry #{entry.id} · {entry.date} · {entry.job_number} · {entry.total_hours}h
+        </p>
+        <div className="space-y-3">
+          <div>
+            <label className="label">Reason *</label>
+            <textarea className="input min-h-[60px]" value={reason}
+              onChange={e => setReason(e.target.value)} placeholder="Describe what needs correcting…" autoFocus />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div><label className="label">Correct Start</label>
+              <input type="time" className="input" value={reqStart} onChange={e => setReqStart(e.target.value)} /></div>
+            <div><label className="label">Correct End</label>
+              <input type="time" className="input" value={reqEnd} onChange={e => setReqEnd(e.target.value)} /></div>
+          </div>
+          <div>
+            <label className="label">Correct Job (optional)</label>
+            <select className="input" value={reqJobId} onChange={e => setReqJobId(e.target.value)}>
+              <option value="">— keep current job —</option>
+              {jobs.filter(j => j.status === 'active').map(j => (
+                <option key={j.id} value={j.id}>{j.job_number} — {j.job_name}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="label">Additional Notes (optional)</label>
+            <input className="input" value={reqNotes} onChange={e => setReqNotes(e.target.value)} placeholder="e.g. started at 6:30 not 7:00" />
+          </div>
+          {err && <p className="text-xs text-red-400">{err}</p>}
+          <div className="flex gap-3 pt-1">
+            <button onClick={submit} disabled={saving} className="btn-primary text-sm disabled:opacity-40">
+              {saving ? 'Submitting…' : 'Submit Request'}
+            </button>
+            <button onClick={onClose} className="btn-secondary text-sm">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function WorkerDashboard() {
   const { user } = useAuth()
   const [stats, setStats] = useState(null)
@@ -21,7 +105,7 @@ export default function WorkerDashboard() {
   useEffect(() => {
     Promise.all([
       reportsApi.dashboard(),
-      timeEntriesApi.list({ status: undefined })
+      timeEntriesApi.list(),
     ]).then(([statsRes, entriesRes]) => {
       setStats(statsRes.data)
       setRecentEntries(entriesRes.data.slice(0, 5))
@@ -40,90 +124,6 @@ export default function WorkerDashboard() {
   )
 
   const today = format(new Date(), 'EEEE, MMMM d')
-
-  // ── Correction Request Modal ──────────────────────────────────────────────
-  function CorrectionModal({ entry, onClose }) {
-    const [reason, setReason] = useState('')
-    const [reqStart, setReqStart] = useState('')
-    const [reqEnd, setReqEnd] = useState('')
-    const [reqJobId, setReqJobId] = useState('')
-    const [reqNotes, setReqNotes] = useState('')
-    const [saving, setSaving] = useState(false)
-    const [done, setDone] = useState(false)
-    const [err, setErr] = useState('')
-
-    const submit = async () => {
-      if (!reason.trim()) { setErr('Reason is required'); return }
-      setSaving(true); setErr('')
-      try {
-        await workerApi.requestCorrection({
-          time_entry_id: entry.id,
-          reason,
-          requested_start_time: reqStart || undefined,
-          requested_end_time: reqEnd || undefined,
-          requested_job_id: reqJobId ? Number(reqJobId) : undefined,
-          requested_notes: reqNotes || undefined,
-        })
-        setDone(true)
-        setTimeout(onClose, 1800)
-      } catch (e) {
-        setErr(e.response?.data?.detail || 'Failed to submit')
-      } finally { setSaving(false) }
-    }
-
-    if (done) return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
-        <div className="bg-slate-900 border border-emerald-500/30 rounded-xl w-full max-w-sm p-6 text-center">
-          <p className="text-emerald-400 font-semibold text-sm">✓ Correction request submitted</p>
-          <p className="text-slate-500 text-xs mt-1">Your supervisor will review it.</p>
-        </div>
-      </div>
-    )
-
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
-        <div className="bg-slate-900 border border-slate-700 rounded-xl w-full max-w-sm p-5 shadow-2xl">
-          <h3 className="font-semibold text-slate-100 mb-1">Request Correction</h3>
-          <p className="text-xs text-slate-500 mb-4">
-            Entry #{entry.id} · {entry.date} · {entry.job_number} · {entry.total_hours}h
-          </p>
-          <div className="space-y-3">
-            <div>
-              <label className="label">Reason *</label>
-              <textarea className="input min-h-[60px]" value={reason}
-                onChange={e => setReason(e.target.value)} placeholder="Describe what needs correcting…" autoFocus />
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div><label className="label">Correct Start</label>
-                <input type="time" className="input" value={reqStart} onChange={e => setReqStart(e.target.value)} /></div>
-              <div><label className="label">Correct End</label>
-                <input type="time" className="input" value={reqEnd} onChange={e => setReqEnd(e.target.value)} /></div>
-            </div>
-            <div>
-              <label className="label">Correct Job (optional)</label>
-              <select className="input" value={reqJobId} onChange={e => setReqJobId(e.target.value)}>
-                <option value="">— keep current job —</option>
-                {jobs.filter(j => j.status === 'active').map(j => (
-                  <option key={j.id} value={j.id}>{j.job_number} — {j.job_name}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="label">Additional Notes (optional)</label>
-              <input className="input" value={reqNotes} onChange={e => setReqNotes(e.target.value)} placeholder="e.g. started at 6:30 not 7:00" />
-            </div>
-            {err && <p className="text-xs text-red-400">{err}</p>}
-            <div className="flex gap-3 pt-1">
-              <button onClick={submit} disabled={saving} className="btn-primary text-sm disabled:opacity-40">
-                {saving ? 'Submitting…' : 'Submit Request'}
-              </button>
-              <button onClick={onClose} className="btn-secondary text-sm">Cancel</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
 
 
   const handleClockIn = async (jobId, assignmentId) => {
@@ -347,7 +347,7 @@ export default function WorkerDashboard() {
         )}
       </div>
       {correctionEntry && (
-        <CorrectionModal entry={correctionEntry} onClose={() => setCorrectionEntry(null)} />
+        <CorrectionModal entry={correctionEntry} jobs={jobs} onClose={() => setCorrectionEntry(null)} />
       )}
     </div>
   )

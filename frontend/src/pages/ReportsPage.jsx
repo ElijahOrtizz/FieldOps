@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { reportsApi, jobsApi } from '../utils/api'
 import { PageHeader, LoadingSpinner, StatCard } from '../components/common'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, Legend } from 'recharts'
@@ -322,12 +322,7 @@ export default function ReportsPage() {
   const [selectedJob, setSelectedJob] = useState('')
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    jobsApi.list().then(r => setJobs(r.data))
-    loadAll()
-  }, [])
-
-  const loadAll = (jobId) => {
+  const loadAll = useCallback((jobId) => {
     setLoading(true)
     Promise.all([
       reportsApi.jobCost(jobId),
@@ -338,7 +333,12 @@ export default function ReportsPage() {
       setByEmployee(emp.data)
       setStatusSummary(stat.data)
     }).finally(() => setLoading(false))
-  }
+  }, [])
+
+  useEffect(() => {
+    jobsApi.list().then(r => setJobs(r.data))
+    loadAll()
+  }, [loadAll])
 
   const handleJobFilter = (jobId) => {
     setSelectedJob(jobId)

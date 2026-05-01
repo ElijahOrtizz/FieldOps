@@ -43,7 +43,7 @@ function EmployeeForm({ employee, employees, onSave, onClose }) {
           <label className="label">Trade</label>
           <select className="input" value={form.trade} onChange={e => setForm({...form, trade: e.target.value})}>
             <option value="">Select...</option>
-            {TRADES.map(t => <option key={t}>{t}</option>)}
+            {TRADES.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
         </div>
       </div>
