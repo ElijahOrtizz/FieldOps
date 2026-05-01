@@ -267,7 +267,7 @@ export default function WorkerDashboard() {
       )}
 
       {clockToast && (
-        <div className={`fixed bottom-6 right-6 z-50 text-white text-sm font-medium px-4 py-2.5 rounded-xl shadow-xl ${clockToast.includes('failed') || clockToast.includes('failed') ? 'bg-red-600' : 'bg-emerald-600'}`}>
+        <div className={`fixed bottom-6 right-6 z-50 text-white text-sm font-medium px-4 py-2.5 rounded-xl shadow-xl ${clockToast.includes('failed') || clockToast.toLowerCase().includes('error') ? 'bg-red-600' : 'bg-emerald-600'}`}>
           {clockToast}
         </div>
       )}

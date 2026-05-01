@@ -5,6 +5,15 @@ import { Users, Plus, Edit2, UserX, Search } from 'lucide-react'
 
 const TRADES = ['Laborer', 'Carpenter', 'Foreman', 'Electrician', 'Plumber', 'Ironworker', 'Equipment Operator', 'Mason', 'Drywaller', 'Painter']
 
+function Toast({ msg, type, onDone }) {
+  useEffect(() => { const t = setTimeout(onDone, 3500); return () => clearTimeout(t) }, [onDone])
+  return (
+    <div className={`fixed bottom-6 right-6 z-50 ${type === 'error' ? 'bg-red-600' : 'bg-emerald-600'} text-white text-sm font-medium px-4 py-2.5 rounded-xl shadow-xl`}>
+      {msg}
+    </div>
+  )
+}
+
 function EmployeeForm({ employee, employees, onSave, onClose }) {
   const [form, setForm] = useState({
     employee_number: employee?.employee_number || '',
@@ -102,6 +111,7 @@ export default function EmployeesPage() {
   const [modal, setModal] = useState(null) // null | 'create' | employee obj
   const [search, setSearch] = useState('')
   const [roleFilter, setRoleFilter] = useState('')
+  const [toast, setToast] = useState(null)
 
   const filtered = employees.filter(emp => {
     const matchesSearch = !search ||
@@ -231,11 +241,12 @@ export default function EmployeesPage() {
           <EmployeeForm
             employee={modal === 'create' ? null : modal}
             employees={employees}
-            onSave={() => { setModal(null); load() }}
+            onSave={() => { setModal(null); load(); setToast({ msg: 'Employee saved', type: 'success' }) }}
             onClose={() => setModal(null)}
           />
         )}
       </Modal>
+      {toast && <Toast msg={toast.msg} type={toast.type} onDone={() => setToast(null)} />}
     </div>
   )
 }

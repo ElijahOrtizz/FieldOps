@@ -10,6 +10,15 @@ const STATUS_COLORS = {
   archived: 'text-red-400 bg-red-500/10',
 }
 
+function Toast({ msg, type, onDone }) {
+  useEffect(() => { const t = setTimeout(onDone, 3500); return () => clearTimeout(t) }, [onDone])
+  return (
+    <div className={`fixed bottom-6 right-6 z-50 ${type === 'error' ? 'bg-red-600' : 'bg-emerald-600'} text-white text-sm font-medium px-4 py-2.5 rounded-xl shadow-xl`}>
+      {msg}
+    </div>
+  )
+}
+
 function JobForm({ job, onSave, onClose }) {
   const [form, setForm] = useState({
     job_number: job?.job_number || '',
@@ -120,6 +129,7 @@ export default function JobsPage() {
   const [loading, setLoading] = useState(true)
   const [modal, setModal] = useState(null)
   const [filter, setFilter] = useState('active')
+  const [toast, setToast] = useState(null)
 
   const load = () => {
     setLoading(true)
@@ -214,8 +224,9 @@ export default function JobsPage() {
       )}
 
       <Modal open={!!modal} onClose={() => setModal(null)} title={modal === 'create' ? 'Add Job' : 'Edit Job'} size="lg">
-        {modal && <JobForm job={modal === 'create' ? null : modal} onSave={() => { setModal(null); load() }} onClose={() => setModal(null)} />}
+        {modal && <JobForm job={modal === 'create' ? null : modal} onSave={() => { setModal(null); load(); setToast({ msg: 'Job saved', type: 'success' }) }} onClose={() => setModal(null)} />}
       </Modal>
+      {toast && <Toast msg={toast.msg} type={toast.type} onDone={() => setToast(null)} />}
     </div>
   )
 }

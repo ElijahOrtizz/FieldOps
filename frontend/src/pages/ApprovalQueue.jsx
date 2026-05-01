@@ -3,6 +3,15 @@ import { approvalsApi } from '../utils/api'
 import { PageHeader, StatusBadge, EmptyState, LoadingSpinner, Modal } from '../components/common'
 import { CheckCircle2, XCircle, MessageSquare, CheckSquare, Zap } from 'lucide-react'
 
+function Toast({ msg, type, onDone }) {
+  useEffect(() => { const t = setTimeout(onDone, 3500); return () => clearTimeout(t) }, [onDone])
+  return (
+    <div className={`fixed bottom-6 right-6 z-50 ${type === 'error' ? 'bg-red-600' : 'bg-emerald-600'} text-white text-sm font-medium px-4 py-2.5 rounded-xl shadow-xl`}>
+      {msg}
+    </div>
+  )
+}
+
 function ApprovalModal({ entry, onClose, onAction }) {
   const [action, setAction] = useState('approved')
   const [notes, setNotes] = useState('')
@@ -105,6 +114,8 @@ export default function ApprovalQueue() {
   const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState(null)
   const [bulkSelected, setBulkSelected] = useState([])
+  const [actionLoading, setActionLoading] = useState(null)
+  const [toast, setToast] = useState(null)
 
   const load = () => {
     setLoading(true)
@@ -117,8 +128,16 @@ export default function ApprovalQueue() {
   useEffect(() => { load() }, [])
 
   const handleAction = async (entryId, data) => {
-    await approvalsApi.process(entryId, data)
-    load()
+    setActionLoading(entryId)
+    try {
+      await approvalsApi.process(entryId, data)
+      setToast({ msg: data.action === 'approved' ? 'Entry approved' : 'Entry rejected', type: 'success' })
+      load()
+    } catch (e) {
+      setToast({ msg: e.response?.data?.detail || 'Action failed', type: 'error' })
+    } finally {
+      setActionLoading(null)
+    }
   }
 
   const handleBulkApprove = async () => {
@@ -209,22 +228,25 @@ export default function ApprovalQueue() {
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => handleAction(entry.id, { action: 'approved' })}
+                        disabled={actionLoading === entry.id}
                         title="Approve"
-                        className="p-1.5 rounded-lg bg-emerald-600/10 hover:bg-emerald-600/25 text-emerald-400 transition-colors"
+                        className="p-1.5 rounded-lg bg-emerald-600/10 hover:bg-emerald-600/25 text-emerald-400 transition-colors disabled:opacity-40"
                       >
                         <CheckCircle2 className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleAction(entry.id, { action: 'rejected' })}
+                        disabled={actionLoading === entry.id}
                         title="Reject"
-                        className="p-1.5 rounded-lg bg-red-600/10 hover:bg-red-600/25 text-red-400 transition-colors"
+                        className="p-1.5 rounded-lg bg-red-600/10 hover:bg-red-600/25 text-red-400 transition-colors disabled:opacity-40"
                       >
                         <XCircle className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => setSelected(entry)}
+                        disabled={actionLoading === entry.id}
                         title="Review with notes"
-                        className="p-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-400 transition-colors"
+                        className="p-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-400 transition-colors disabled:opacity-40"
                       >
                         <MessageSquare className="w-4 h-4" />
                       </button>
@@ -238,6 +260,7 @@ export default function ApprovalQueue() {
       )}
 
       <ApprovalModal entry={selected} onClose={() => setSelected(null)} onAction={handleAction} />
+      {toast && <Toast msg={toast.msg} type={toast.type} onDone={() => setToast(null)} />}
     </div>
   )
 }

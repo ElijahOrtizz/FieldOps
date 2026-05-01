@@ -3,6 +3,15 @@ import { costCodesApi } from '../utils/api'
 import { PageHeader, EmptyState, LoadingSpinner, Modal } from '../components/common'
 import { Tag, Plus, Edit2, ToggleLeft } from 'lucide-react'
 
+function Toast({ msg, type, onDone }) {
+  useEffect(() => { const t = setTimeout(onDone, 3500); return () => clearTimeout(t) }, [onDone])
+  return (
+    <div className={`fixed bottom-6 right-6 z-50 ${type === 'error' ? 'bg-red-600' : 'bg-emerald-600'} text-white text-sm font-medium px-4 py-2.5 rounded-xl shadow-xl`}>
+      {msg}
+    </div>
+  )
+}
+
 function CostCodeForm({ cc, onSave, onClose }) {
   const [form, setForm] = useState({
     code: cc?.code || '',
@@ -59,6 +68,7 @@ export default function CostCodesPage() {
   const [codes, setCodes] = useState([])
   const [loading, setLoading] = useState(true)
   const [modal, setModal] = useState(null)
+  const [toast, setToast] = useState(null)
 
   const load = () => {
     setLoading(true)
@@ -140,8 +150,9 @@ export default function CostCodesPage() {
       )}
 
       <Modal open={!!modal} onClose={() => setModal(null)} title={modal === 'create' ? 'Add Cost Code' : 'Edit Cost Code'}>
-        {modal && <CostCodeForm cc={modal === 'create' ? null : modal} onSave={() => { setModal(null); load() }} onClose={() => setModal(null)} />}
+        {modal && <CostCodeForm cc={modal === 'create' ? null : modal} onSave={() => { setModal(null); load(); setToast({ msg: 'Cost code saved', type: 'success' }) }} onClose={() => setModal(null)} />}
       </Modal>
+      {toast && <Toast msg={toast.msg} type={toast.type} onDone={() => setToast(null)} />}
     </div>
   )
 }

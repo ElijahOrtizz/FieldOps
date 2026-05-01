@@ -52,6 +52,7 @@ export default function DailyReviewPage() {
   const [toast, setToast] = useState(null)
   const [noteModal, setNoteModal] = useState(null)
   const [showVariance, setShowVariance] = useState(true)
+  const [actionInProgress, setActionInProgress] = useState(null)
 
   useEffect(() => { jobsApi.list().then(r => setJobs(r.data)).catch(() => {}) }, [])
 
@@ -72,6 +73,12 @@ export default function DailyReviewPage() {
   const action = async (fn, successMsg) => {
     try { await fn(); showToast(successMsg); load() }
     catch (e) { showToast(e.response?.data?.detail || 'Error', 'error') }
+  }
+
+  const entryAction = async (id, fn, successMsg) => {
+    setActionInProgress(id)
+    await action(fn, successMsg)
+    setActionInProgress(null)
   }
 
   const handleSignoff = async (note, reopen = false) => {
@@ -245,8 +252,9 @@ export default function DailyReviewPage() {
                     <span className="font-bold text-slate-200 shrink-0">{e.hours}h</span>
                     {e.status === 'submitted' && (
                       <div className="flex items-center gap-1 shrink-0">
-                        <button onClick={() => action(() => dailyReviewApi.approveEntry(e.id), 'Approved')}
-                          className="p-1 text-slate-600 hover:text-emerald-400" title="Approve">
+                        <button onClick={() => entryAction(e.id, () => dailyReviewApi.approveEntry(e.id), 'Approved')}
+                          disabled={actionInProgress === e.id}
+                          className="p-1 text-slate-600 hover:text-emerald-400 disabled:opacity-40" title="Approve">
                           <CheckCircle2 className="w-3.5 h-3.5" />
                         </button>
                         <button onClick={() => setNoteModal({ action: 'reject', entryId: e.id })}
@@ -279,10 +287,12 @@ export default function DailyReviewPage() {
                       <p className="text-xs text-slate-500 mt-0.5 italic">{cr.reason}</p>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
-                      <button onClick={() => action(() => dailyReviewApi.approveCorrection(cr.id, { apply_changes: true }), 'Correction approved')}
-                        className="text-[10px] text-emerald-400 hover:text-emerald-300 border border-emerald-500/20 px-2 py-0.5 rounded">Apply</button>
-                      <button onClick={() => action(() => dailyReviewApi.rejectCorrection(cr.id), 'Correction rejected')}
-                        className="text-[10px] text-red-400 hover:text-red-300 border border-red-500/20 px-2 py-0.5 rounded">Reject</button>
+                      <button onClick={() => entryAction(cr.id, () => dailyReviewApi.approveCorrection(cr.id, { apply_changes: true }), 'Correction approved')}
+                        disabled={actionInProgress === cr.id}
+                        className="text-[10px] text-emerald-400 hover:text-emerald-300 border border-emerald-500/20 px-2 py-0.5 rounded disabled:opacity-40">Apply</button>
+                      <button onClick={() => entryAction(cr.id, () => dailyReviewApi.rejectCorrection(cr.id), 'Correction rejected')}
+                        disabled={actionInProgress === cr.id}
+                        className="text-[10px] text-red-400 hover:text-red-300 border border-red-500/20 px-2 py-0.5 rounded disabled:opacity-40">Reject</button>
                     </div>
                   </div>
                 ))}

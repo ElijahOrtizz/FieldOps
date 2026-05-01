@@ -46,7 +46,7 @@ function MRModal({ mr, jobs, costCodes, onSave, onClose, userRole }) {
   }
 
   return (
-    <Modal title={isEdit ? 'Edit Material Request' : 'New Material Request'} onClose={onClose}>
+    <Modal open={true} title={isEdit ? 'Edit Material Request' : 'New Material Request'} onClose={onClose}>
       <div className="space-y-4">
         <div className="form-group">
           <label className="label">Material Name *</label>
@@ -117,7 +117,7 @@ function StatusModal({ mr, onSave, onClose }) {
   }
 
   return (
-    <Modal title={`Update Status — ${mr.material_name}`} onClose={onClose}>
+    <Modal open={true} title={`Update Status — ${mr.material_name}`} onClose={onClose}>
       <div className="space-y-4">
         <div className="form-group">
           <label className="label">New Status</label>

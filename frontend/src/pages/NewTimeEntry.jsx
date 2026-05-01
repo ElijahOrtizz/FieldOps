@@ -147,6 +147,17 @@ export default function NewTimeEntry() {
             </div>
           </div>
 
+          {form.start_time && form.end_time && (() => {
+            const [sh, sm] = form.start_time.split(':').map(Number)
+            const [eh, em] = form.end_time.split(':').map(Number)
+            return (eh * 60 + em) - (sh * 60 + sm) <= 0
+          })() && (
+            <p className="text-xs text-red-400 flex items-center gap-1 -mt-2">
+              <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+              End time must be after start time
+            </p>
+          )}
+
           {/* Job */}
           <div className="form-group">
             <label className="label">Job *</label>
