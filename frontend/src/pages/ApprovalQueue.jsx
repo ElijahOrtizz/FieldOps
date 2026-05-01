@@ -29,37 +29,37 @@ function ApprovalModal({ entry, onClose, onAction }) {
       {entry && (
         <div className="space-y-4">
           {/* Entry details */}
-          <div className="bg-slate-800/50 rounded-xl p-4 space-y-2 text-sm">
+          <div className="bg-gray-50 dark:bg-slate-800/50 rounded-xl p-4 space-y-2 text-sm border border-gray-200 dark:border-transparent">
             <div className="flex justify-between">
-              <span className="text-slate-500">Employee</span>
-              <span className="font-medium">{entry.employee_name} ({entry.employee_number})</span>
+              <span className="text-gray-500 dark:text-slate-500">Employee</span>
+              <span className="font-medium text-gray-900 dark:text-slate-100">{entry.employee_name} ({entry.employee_number})</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500">Date</span>
-              <span>{entry.date}</span>
+              <span className="text-gray-500 dark:text-slate-500">Date</span>
+              <span className="text-gray-800 dark:text-slate-200">{entry.date}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500">Job</span>
-              <span>{entry.job_number} — {entry.job_name}</span>
+              <span className="text-gray-500 dark:text-slate-500">Job</span>
+              <span className="text-gray-800 dark:text-slate-200">{entry.job_number} — {entry.job_name}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500">Cost Code</span>
-              <span>{entry.cost_code} — {entry.cost_code_description}</span>
+              <span className="text-gray-500 dark:text-slate-500">Cost Code</span>
+              <span className="text-gray-800 dark:text-slate-200">{entry.cost_code} — {entry.cost_code_description}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500">Hours</span>
-              <span className="font-bold text-brand-400">{entry.total_hours}h ({entry.pay_type})</span>
+              <span className="text-gray-500 dark:text-slate-500">Hours</span>
+              <span className="font-bold text-brand-600 dark:text-brand-400">{entry.total_hours}h ({entry.pay_type})</span>
             </div>
             {entry.start_time && (
               <div className="flex justify-between">
-                <span className="text-slate-500">Time</span>
-                <span>{entry.start_time} – {entry.end_time}</span>
+                <span className="text-gray-500 dark:text-slate-500">Time</span>
+                <span className="text-gray-800 dark:text-slate-200">{entry.start_time} – {entry.end_time}</span>
               </div>
             )}
             {entry.notes && (
               <div className="flex justify-between">
-                <span className="text-slate-500">Notes</span>
-                <span className="text-right max-w-48 text-slate-300">{entry.notes}</span>
+                <span className="text-gray-500 dark:text-slate-500">Notes</span>
+                <span className="text-right max-w-48 text-gray-700 dark:text-slate-300">{entry.notes}</span>
               </div>
             )}
           </div>
@@ -69,15 +69,15 @@ function ApprovalModal({ entry, onClose, onAction }) {
             <label className="label">Action</label>
             <div className="grid grid-cols-3 gap-2">
               {[
-                { value: 'approved', label: 'Approve', cls: 'border-emerald-600/40 text-emerald-400', active: 'bg-emerald-600/20 border-emerald-600' },
-                { value: 'rejected', label: 'Reject', cls: 'border-red-600/30 text-red-400', active: 'bg-red-600/20 border-red-600' },
-                { value: 'changes_requested', label: 'Request Changes', cls: 'border-amber-600/30 text-amber-400', active: 'bg-amber-600/20 border-amber-600' },
+                { value: 'approved', label: 'Approve', cls: 'border-emerald-600/40 text-emerald-600 dark:text-emerald-400', active: 'bg-emerald-600/20 border-emerald-600' },
+                { value: 'rejected', label: 'Reject', cls: 'border-red-600/30 text-red-600 dark:text-red-400', active: 'bg-red-600/20 border-red-600' },
+                { value: 'changes_requested', label: 'Request Changes', cls: 'border-amber-600/30 text-amber-600 dark:text-amber-400', active: 'bg-amber-600/20 border-amber-600' },
               ].map(opt => (
                 <button
                   key={opt.value}
                   onClick={() => setAction(opt.value)}
                   className={`py-2 px-3 rounded-lg border text-xs font-medium transition-all ${
-                    action === opt.value ? opt.active : `${opt.cls} bg-transparent hover:bg-slate-800`
+                    action === opt.value ? opt.active : `${opt.cls} bg-transparent hover:bg-gray-100 dark:hover:bg-slate-800`
                   }`}
                 >
                   {opt.label}
@@ -141,9 +141,16 @@ export default function ApprovalQueue() {
   }
 
   const handleBulkApprove = async () => {
-    if (!confirm(`Approve ${bulkSelected.length} entries?`)) return
-    await approvalsApi.bulkApprove(bulkSelected)
-    load()
+    const count = bulkSelected.length
+    if (!confirm(`Approve ${count} entries?`)) return
+    try {
+      await approvalsApi.bulkApproveIds({ entry_ids: bulkSelected })
+      setBulkSelected([])
+      setToast({ msg: `${count} entries approved`, type: 'success' })
+      load()
+    } catch (err) {
+      setToast({ msg: err.response?.data?.detail || 'Bulk approve failed', type: 'error' })
+    }
   }
 
   const toggleBulk = (id) => {
@@ -179,7 +186,7 @@ export default function ApprovalQueue() {
         <div className="card overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-slate-800">
+              <tr className="border-b border-gray-200 dark:border-slate-800">
                 <th className="th w-8">
                   <input type="checkbox" className="accent-brand-500"
                     checked={bulkSelected.length === entries.length}
@@ -205,24 +212,24 @@ export default function ApprovalQueue() {
                     />
                   </td>
                   <td className="td">
-                    <p className="font-medium text-slate-200">{entry.employee_name}</p>
-                    <p className="text-xs text-slate-500">{entry.employee_number}</p>
+                    <p className="font-medium text-gray-800 dark:text-slate-200">{entry.employee_name}</p>
+                    <p className="text-xs text-gray-500 dark:text-slate-500">{entry.employee_number}</p>
                   </td>
-                  <td className="td font-mono text-xs text-slate-400">{entry.date}</td>
+                  <td className="td font-mono text-xs text-gray-600 dark:text-slate-400">{entry.date}</td>
                   <td className="td">
-                    <span className="font-medium">{entry.job_number}</span>
-                    <span className="text-xs text-slate-500 block truncate max-w-36">{entry.job_name}</span>
+                    <span className="font-medium text-gray-800 dark:text-slate-200">{entry.job_number}</span>
+                    <span className="text-xs text-gray-500 dark:text-slate-500 block truncate max-w-36">{entry.job_name}</span>
                   </td>
                   <td className="td text-xs">
-                    <span className="font-mono text-brand-400">{entry.cost_code}</span>
-                    <span className="text-slate-500 block">{entry.cost_code_description}</span>
+                    <span className="font-mono text-brand-600 dark:text-brand-400">{entry.cost_code}</span>
+                    <span className="text-gray-500 dark:text-slate-500 block">{entry.cost_code_description}</span>
                   </td>
                   <td className="td">
-                    <span className="font-bold text-slate-100">{entry.total_hours}h</span>
-                    <span className="text-xs text-slate-500 block">{entry.pay_type}</span>
+                    <span className="font-bold text-gray-900 dark:text-slate-100">{entry.total_hours}h</span>
+                    <span className="text-xs text-gray-500 dark:text-slate-500 block">{entry.pay_type}</span>
                   </td>
                   <td className="td max-w-36">
-                    <span className="text-xs text-slate-400 truncate block">{entry.notes || '—'}</span>
+                    <span className="text-xs text-gray-600 dark:text-slate-400 truncate block">{entry.notes || '—'}</span>
                   </td>
                   <td className="td">
                     <div className="flex items-center gap-1">
@@ -230,7 +237,7 @@ export default function ApprovalQueue() {
                         onClick={() => handleAction(entry.id, { action: 'approved' })}
                         disabled={actionLoading === entry.id}
                         title="Approve"
-                        className="p-1.5 rounded-lg bg-emerald-600/10 hover:bg-emerald-600/25 text-emerald-400 transition-colors disabled:opacity-40"
+                        className="p-1.5 rounded-lg bg-emerald-600/10 hover:bg-emerald-600/25 text-emerald-600 dark:text-emerald-400 transition-colors disabled:opacity-40"
                       >
                         <CheckCircle2 className="w-4 h-4" />
                       </button>
@@ -238,7 +245,7 @@ export default function ApprovalQueue() {
                         onClick={() => handleAction(entry.id, { action: 'rejected' })}
                         disabled={actionLoading === entry.id}
                         title="Reject"
-                        className="p-1.5 rounded-lg bg-red-600/10 hover:bg-red-600/25 text-red-400 transition-colors disabled:opacity-40"
+                        className="p-1.5 rounded-lg bg-red-600/10 hover:bg-red-600/25 text-red-600 dark:text-red-400 transition-colors disabled:opacity-40"
                       >
                         <XCircle className="w-4 h-4" />
                       </button>
@@ -246,7 +253,7 @@ export default function ApprovalQueue() {
                         onClick={() => setSelected(entry)}
                         disabled={actionLoading === entry.id}
                         title="Review with notes"
-                        className="p-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-400 transition-colors disabled:opacity-40"
+                        className="p-1.5 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-gray-600 dark:text-slate-400 transition-colors disabled:opacity-40"
                       >
                         <MessageSquare className="w-4 h-4" />
                       </button>

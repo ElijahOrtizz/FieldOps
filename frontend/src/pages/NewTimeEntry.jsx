@@ -81,7 +81,7 @@ export default function NewTimeEntry() {
       <div className="flex flex-col items-center justify-center h-64 gap-3">
         <CheckCircle2 className="w-12 h-12 text-emerald-400" />
         <p className="text-lg font-semibold text-emerald-400">Entry submitted!</p>
-        <p className="text-slate-500 text-sm">Redirecting to your entries...</p>
+        <p className="text-gray-500 dark:text-slate-500 text-sm">Redirecting to your entries...</p>
       </div>
     )
   }
@@ -131,7 +131,7 @@ export default function NewTimeEntry() {
             <div className="form-group">
               <label className="label">Total Hours *</label>
               <div className="relative">
-                <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-500" />
                 <input
                   type="number"
                   name="total_hours"

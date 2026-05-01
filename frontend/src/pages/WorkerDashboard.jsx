@@ -38,18 +38,18 @@ function CorrectionModal({ entry, jobs, onClose }) {
 
   if (done) return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
-      <div className="bg-slate-900 border border-emerald-500/30 rounded-xl w-full max-w-sm p-6 text-center">
-        <p className="text-emerald-400 font-semibold text-sm">✓ Correction request submitted</p>
-        <p className="text-slate-500 text-xs mt-1">Your supervisor will review it.</p>
+      <div className="bg-white border border-emerald-500/30 dark:bg-slate-900 rounded-xl w-full max-w-sm p-6 text-center">
+        <p className="text-emerald-600 dark:text-emerald-400 font-semibold text-sm">✓ Correction request submitted</p>
+        <p className="text-gray-500 dark:text-slate-500 text-xs mt-1">Your supervisor will review it.</p>
       </div>
     </div>
   )
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
-      <div className="bg-slate-900 border border-slate-700 rounded-xl w-full max-w-sm p-5 shadow-2xl">
-        <h3 className="font-semibold text-slate-100 mb-1">Request Correction</h3>
-        <p className="text-xs text-slate-500 mb-4">
+      <div className="bg-white border border-gray-200 dark:bg-slate-900 dark:border-slate-700 rounded-xl w-full max-w-sm p-5 shadow-2xl">
+        <h3 className="font-semibold text-gray-900 dark:text-slate-100 mb-1">Request Correction</h3>
+        <p className="text-xs text-gray-500 dark:text-slate-500 mb-4">
           Entry #{entry.id} · {entry.date} · {entry.job_number} · {entry.total_hours}h
         </p>
         <div className="space-y-3">
@@ -77,7 +77,7 @@ function CorrectionModal({ entry, jobs, onClose }) {
             <label className="label">Additional Notes (optional)</label>
             <input className="input" value={reqNotes} onChange={e => setReqNotes(e.target.value)} placeholder="e.g. started at 6:30 not 7:00" />
           </div>
-          {err && <p className="text-xs text-red-400">{err}</p>}
+          {err && <p className="text-xs text-red-500 dark:text-red-400">{err}</p>}
           <div className="flex gap-3 pt-1">
             <button onClick={submit} disabled={saving} className="btn-primary text-sm disabled:opacity-40">
               {saving ? 'Submitting…' : 'Submit Request'}
@@ -99,7 +99,7 @@ export default function WorkerDashboard() {
   const [clockSession, setClockSession] = useState(null)
   const [clockLoading, setClockLoading] = useState(false)
   const [clockToast, setClockToast] = useState('')
-  const [correctionEntry, setCorrectionEntry] = useState(null)  // entry to request correction for
+  const [correctionEntry, setCorrectionEntry] = useState(null)
   const [jobs, setJobs] = useState([])
 
   useEffect(() => {
@@ -124,7 +124,6 @@ export default function WorkerDashboard() {
   )
 
   const today = format(new Date(), 'EEEE, MMMM d')
-
 
   const handleClockIn = async (jobId, assignmentId) => {
     setClockLoading(true)
@@ -166,67 +165,49 @@ export default function WorkerDashboard() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <StatCard
-          label="Hours This Week"
-          value={stats?.hours_this_week ?? 0}
-          sub="approved hours"
-          icon={TrendingUp}
-          color="brand"
-        />
-        <StatCard
-          label="Entries This Week"
-          value={stats?.entries_this_week ?? 0}
-          sub="time entries submitted"
-          icon={Clock}
-          color="green"
-        />
-        <StatCard
-          label="Awaiting Approval"
-          value={stats?.pending_approvals ?? 0}
-          sub="submitted entries"
-          icon={Clock}
-          color="amber"
-        />
+        <StatCard label="Hours This Week" value={stats?.hours_this_week ?? 0} sub="approved hours" icon={TrendingUp} color="brand" />
+        <StatCard label="Entries This Week" value={stats?.entries_this_week ?? 0} sub="time entries submitted" icon={Clock} color="green" />
+        <StatCard label="Awaiting Approval" value={stats?.pending_approvals ?? 0} sub="submitted entries" icon={Clock} color="amber" />
       </div>
 
       {/* Today's Schedule */}
       {todayAssignments.length === 0 && !loading && (
-        <div className="card mb-5 border border-slate-800">
-          <p className="text-sm font-medium text-slate-400">No assignment scheduled for today.</p>
-          <p className="text-xs text-slate-600 mt-1">Check with your supervisor if this looks wrong.</p>
+        <div className="card mb-5 border border-gray-200 dark:border-slate-800">
+          <p className="text-sm font-medium text-gray-600 dark:text-slate-400">No assignment scheduled for today.</p>
+          <p className="text-xs text-gray-400 dark:text-slate-600 mt-1">Check with your supervisor if this looks wrong.</p>
         </div>
       )}
 
       {todayAssignments.length > 0 && (
         <div className="card mb-5">
           <div className="flex items-center gap-2 mb-3">
-            <CalendarRange className="w-4 h-4 text-brand-400" />
-            <h2 className="font-semibold text-slate-200 text-sm">Today's Assignment</h2>
+            <CalendarRange className="w-4 h-4 text-brand-500 dark:text-brand-400" />
+            <h2 className="font-semibold text-gray-800 dark:text-slate-200 text-sm">Today's Assignment</h2>
           </div>
           <div className="space-y-2">
             {todayAssignments.map(a => (
-              <div key={a.id} className="bg-slate-800/60 rounded-xl px-4 py-3 flex items-start justify-between gap-4">
+              <div key={a.id} className="bg-gray-100 dark:bg-slate-800/60 rounded-xl px-4 py-3 flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-slate-100 text-sm truncate">{a.job_name}</p>
+                  <p className="font-semibold text-gray-900 dark:text-slate-100 text-sm truncate">{a.job_name}</p>
                   <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1">
-                    <span className="text-xs text-slate-500 font-mono">{a.job_number}</span>
+                    <span className="text-xs text-gray-500 dark:text-slate-500 font-mono">{a.job_number}</span>
                     {a.job_address && (
-                      <span className="text-xs text-slate-500 flex items-center gap-1">
+                      <span className="text-xs text-gray-500 dark:text-slate-500 flex items-center gap-1">
                         <MapPin className="w-3 h-3" />{a.job_address}
                       </span>
                     )}
                     {a.supervisor_name && (
-                      <span className="text-xs text-slate-500">Supervisor: {a.supervisor_name}</span>
+                      <span className="text-xs text-gray-500 dark:text-slate-500">Supervisor: {a.supervisor_name}</span>
                     )}
                   </div>
-                  {a.notes && <p className="text-xs text-slate-600 italic mt-1">{a.notes}</p>}
+                  {a.notes && <p className="text-xs text-gray-400 dark:text-slate-600 italic mt-1">{a.notes}</p>}
                 </div>
                 <div className="text-right shrink-0">
                   {a.planned_start_time && a.planned_end_time ? (
-                    <p className="text-sm font-bold text-slate-200">{a.planned_start_time} – {a.planned_end_time}</p>
+                    <p className="text-sm font-bold text-gray-800 dark:text-slate-200">{a.planned_start_time} – {a.planned_end_time}</p>
                   ) : null}
-                  <p className="text-xs text-brand-400 font-semibold">{a.planned_hours}h planned</p>
-                  {a.role && <p className="text-[10px] text-slate-600 mt-0.5">{a.role}</p>}
+                  <p className="text-xs text-brand-600 dark:text-brand-400 font-semibold">{a.planned_hours}h planned</p>
+                  {a.role && <p className="text-[10px] text-gray-400 dark:text-slate-600 mt-0.5">{a.role}</p>}
                 </div>
               </div>
             ))}
@@ -248,12 +229,12 @@ export default function WorkerDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <p className="text-sm font-semibold text-emerald-300">Clocked In</p>
+                <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
+                <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-300">Clocked In</p>
               </div>
-              <p className="text-xs text-slate-400">{clockSession.job_name}</p>
+              <p className="text-xs text-gray-600 dark:text-slate-400">{clockSession.job_name}</p>
               {clockSession.clock_in_time && (
-                <p className="text-[10px] text-slate-600 mt-0.5">
+                <p className="text-[10px] text-gray-400 dark:text-slate-600 mt-0.5">
                   Since {format(new Date(clockSession.clock_in_time), 'h:mm a')}
                 </p>
               )}
@@ -275,23 +256,23 @@ export default function WorkerDashboard() {
       {/* Quick actions */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         <Link to="/worker/new-entry"
-          className="card hover:border-brand-700 transition-colors flex items-center gap-4 group cursor-pointer">
+          className="card hover:border-brand-300 dark:hover:border-brand-700 transition-colors flex items-center gap-4 group cursor-pointer">
           <div className="w-10 h-10 bg-brand-600/20 rounded-xl flex items-center justify-center group-hover:bg-brand-600/30 transition-colors">
-            <Clock className="w-5 h-5 text-brand-400" />
+            <Clock className="w-5 h-5 text-brand-600 dark:text-brand-400" />
           </div>
           <div>
-            <p className="font-semibold text-slate-200">Log Time Entry</p>
-            <p className="text-xs text-slate-500">Submit hours for a job</p>
+            <p className="font-semibold text-gray-800 dark:text-slate-200">Log Time Entry</p>
+            <p className="text-xs text-gray-500 dark:text-slate-500">Submit hours for a job</p>
           </div>
         </Link>
         <Link to="/worker/my-entries"
-          className="card hover:border-slate-700 transition-colors flex items-center gap-4 group cursor-pointer">
-          <div className="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center">
-            <Clock className="w-5 h-5 text-slate-400" />
+          className="card hover:border-gray-300 dark:hover:border-slate-700 transition-colors flex items-center gap-4 group cursor-pointer">
+          <div className="w-10 h-10 bg-gray-200 dark:bg-slate-800 rounded-xl flex items-center justify-center">
+            <Clock className="w-5 h-5 text-gray-500 dark:text-slate-400" />
           </div>
           <div>
-            <p className="font-semibold text-slate-200">View My Entries</p>
-            <p className="text-xs text-slate-500">Check status of submitted time</p>
+            <p className="font-semibold text-gray-800 dark:text-slate-200">View My Entries</p>
+            <p className="text-xs text-gray-500 dark:text-slate-500">Check status of submitted time</p>
           </div>
         </Link>
       </div>
@@ -299,18 +280,18 @@ export default function WorkerDashboard() {
       {/* Recent entries */}
       <div className="card">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold text-slate-200">Recent Entries</h2>
-          <Link to="/worker/my-entries" className="text-xs text-brand-400 hover:text-brand-300">View all →</Link>
+          <h2 className="font-semibold text-gray-800 dark:text-slate-200">Recent Entries</h2>
+          <Link to="/worker/my-entries" className="text-xs text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300">View all →</Link>
         </div>
         {recentEntries.length === 0 ? (
-          <div className="text-center py-8 text-slate-500 text-sm">
-            No time entries yet. <Link to="/worker/new-entry" className="text-brand-400">Log your first entry →</Link>
+          <div className="text-center py-8 text-gray-500 dark:text-slate-500 text-sm">
+            No time entries yet. <Link to="/worker/new-entry" className="text-brand-600 dark:text-brand-400">Log your first entry →</Link>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-slate-800">
+                <tr className="border-b border-gray-200 dark:border-slate-800">
                   <th className="th">Date</th>
                   <th className="th">Job</th>
                   <th className="th">Cost Code</th>
@@ -324,8 +305,8 @@ export default function WorkerDashboard() {
                   <tr key={entry.id} className="table-row">
                     <td className="td font-mono text-xs">{entry.date}</td>
                     <td className="td">
-                      <span className="font-medium">{entry.job_number}</span>
-                      <span className="text-slate-500 text-xs block">{entry.job_name}</span>
+                      <span className="font-medium text-gray-800 dark:text-slate-200">{entry.job_number}</span>
+                      <span className="text-gray-500 dark:text-slate-500 text-xs block">{entry.job_name}</span>
                     </td>
                     <td className="td text-xs">{entry.cost_code} — {entry.cost_code_description}</td>
                     <td className="td font-semibold">{entry.total_hours}h</td>
@@ -334,7 +315,7 @@ export default function WorkerDashboard() {
                       {['submitted', 'rejected', 'needs_correction'].includes(entry.status) && (
                         <button
                           onClick={() => setCorrectionEntry(entry)}
-                          className="text-[10px] text-slate-500 hover:text-amber-400 transition-colors whitespace-nowrap">
+                          className="text-[10px] text-gray-400 dark:text-slate-500 hover:text-amber-500 dark:hover:text-amber-400 transition-colors whitespace-nowrap">
                           Request Correction
                         </button>
                       )}

@@ -32,14 +32,14 @@ export default function SettingsPage() {
   if (loading) return <div className="flex justify-center py-16"><LoadingSpinner size="lg" /></div>
   if (!form) return (
     <div className="max-w-2xl">
-      <PageHeader title="Settings" subtitle="Configure FieldOps for your company" />
-      <div className="card text-center py-10 text-slate-500">Could not load settings. Check that the backend is running.</div>
+      <PageHeader title="Settings" subtitle="Configure Stryda for your company" />
+      <div className="card text-center py-10 text-gray-500 dark:text-slate-500">Could not load settings. Check that the backend is running.</div>
     </div>
   )
 
   return (
     <div className="max-w-2xl">
-      <PageHeader title="Settings" subtitle="Configure FieldOps for your company" />
+      <PageHeader title="Settings" subtitle="Configure Stryda for your company" />
 
       <div className="card space-y-5">
         <div className="form-group">
@@ -70,7 +70,7 @@ export default function SettingsPage() {
               onChange={e => setForm({...form, overtime_threshold: parseFloat(e.target.value)})}
               min="4" max="16" step="0.5"
             />
-            <p className="text-xs text-slate-500 mt-1">Hours per day before overtime kicks in</p>
+            <p className="text-xs text-gray-500 dark:text-slate-500 mt-1">Hours per day before overtime kicks in</p>
           </div>
         </div>
 
@@ -81,7 +81,7 @@ export default function SettingsPage() {
             <option value="sage_300">Sage 300 CRE</option>
             <option value="sage_intacct">Sage Intacct (future)</option>
           </select>
-          <p className="text-xs text-slate-500 mt-1">Determines CSV column format on export</p>
+          <p className="text-xs text-gray-500 dark:text-slate-500 mt-1">Determines CSV column format on export</p>
         </div>
 
         <div className="form-group">
@@ -92,10 +92,10 @@ export default function SettingsPage() {
             onChange={e => setForm({...form, upload_dir: e.target.value})}
             placeholder="uploads"
           />
-          <p className="text-xs text-slate-500 mt-1">Where receipt and photo uploads are stored on the server</p>
+          <p className="text-xs text-gray-500 dark:text-slate-500 mt-1">Where receipt and photo uploads are stored on the server</p>
         </div>
 
-        <div className="pt-2 border-t border-slate-800 flex items-center gap-4">
+        <div className="pt-2 border-t border-gray-200 dark:border-slate-800 flex items-center gap-4">
           <button onClick={handleSave} disabled={saving} className="btn-primary">
             <Save className="w-4 h-4" />
             {saving ? 'Saving...' : 'Save Settings'}
@@ -111,8 +111,8 @@ export default function SettingsPage() {
 
       {/* Phase 3 Placeholder */}
       <div className="card mt-5 opacity-50 pointer-events-none">
-        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Phase 3 — Coming Soon</p>
-        <div className="space-y-2 text-sm text-slate-600">
+        <p className="text-xs font-bold text-gray-500 dark:text-slate-500 uppercase tracking-wider mb-3">Phase 3 — Coming Soon</p>
+        <div className="space-y-2 text-sm text-gray-400 dark:text-slate-600">
           <p>🔗 Direct Sage API connection (pull employees, jobs, cost codes)</p>
           <p>📦 Vendor management and price comparison</p>
           <p>🧾 Purchase order approval workflow</p>

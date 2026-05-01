@@ -1,4 +1,4 @@
-# FieldOps — Weekly Timecards UX Upgrade
+# Stryda — Weekly Timecards UX Upgrade
 
 ## What Changed
 
@@ -81,7 +81,7 @@ When showing fewer than total: count is highlighted in brand color.
 A `seed_large.py` script adds 35 realistic employees with varied time entries across the current week.
 
 ```bash
-cd fieldops/backend
+cd stryda/backend
 python3 seed_large.py
 ```
 

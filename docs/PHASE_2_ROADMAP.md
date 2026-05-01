@@ -1,4 +1,4 @@
-# FieldOps Phase Roadmap
+# Stryda Phase Roadmap
 
 ## Phase 1 (Complete) — Sage-Ready MVP
 
@@ -16,7 +16,7 @@ Core timecard system with approval workflow and CSV export.
 
 ## Phase 2 (Complete) — Field Operations Platform
 
-Turns FieldOps from a timecard tool into a real contractor operations system.
+Turns Stryda from a timecard tool into a real contractor operations system.
 
 ### What Phase 2 Added
 
@@ -66,7 +66,7 @@ Turns FieldOps from a timecard tool into a real contractor operations system.
 
 ### Sage Direct Integration
 - Direct Sage API / ODBC connection to pull employees, jobs, cost codes automatically
-- Scheduled nightly sync: Sage → FieldOps master data
+- Scheduled nightly sync: Sage → Stryda master data
 - Push approved time entries directly to Sage payroll (no manual CSV import)
 - Sage Intacct REST API support
 - Sync error reporting and conflict resolution

@@ -49,7 +49,7 @@ const adminNav = [
 function NavSection({ title, links }) {
   return (
     <div className="mb-4">
-      {title && <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest px-3 mb-2">{title}</p>}
+      {title && <p className="text-[10px] font-bold text-gray-400 dark:text-slate-600 uppercase tracking-widest px-3 mb-2">{title}</p>}
       <nav className="space-y-0.5">
         {links.map(({ to, label, icon: Icon, exact }) => (
           <NavLink
@@ -91,8 +91,8 @@ export default function Layout() {
             <HardHat className="w-4 h-4 text-white" />
           </div>
           <div>
-            <span className="font-bold text-slate-100 text-base tracking-tight">FieldOps</span>
-            <span className="text-[10px] text-slate-500 block -mt-0.5">v2.0 · Field Operations</span>
+            <span className="font-bold text-gray-900 dark:text-slate-100 text-base tracking-tight">Stryda</span>
+            <span className="text-[10px] text-gray-400 dark:text-slate-500 block -mt-0.5">v2.0 · Field Operations</span>
           </div>
         </div>
       </div>
@@ -111,19 +111,19 @@ export default function Layout() {
       </div>
 
       {/* User info */}
-      <div className="border-t border-slate-800 p-3">
+      <div className="border-t border-gray-200 dark:border-slate-800 p-3">
         <div className="flex items-center gap-3 px-1 mb-2">
           <div className="w-8 h-8 rounded-full bg-brand-700 flex items-center justify-center text-xs font-bold text-brand-200 shrink-0">
             {user?.name?.charAt(0)?.toUpperCase() || '?'}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium text-slate-200 truncate">{user?.name}</p>
-            <p className="text-xs text-slate-500 capitalize">{user?.role}</p>
+            <p className="text-sm font-medium text-gray-800 dark:text-slate-200 truncate">{user?.name}</p>
+            <p className="text-xs text-gray-500 dark:text-slate-500 capitalize">{user?.role}</p>
           </div>
           <button
             onClick={toggleTheme}
             title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            className="p-1.5 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-slate-700 transition-colors shrink-0"
+            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:text-slate-500 dark:hover:text-slate-300 dark:hover:bg-slate-700 transition-colors shrink-0"
           >
             {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
@@ -137,9 +137,9 @@ export default function Layout() {
   )
 
   return (
-    <div className="flex h-screen bg-slate-950 overflow-hidden">
+    <div className="flex h-screen bg-gray-100 dark:bg-slate-950 overflow-hidden">
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex flex-col w-56 bg-slate-900 border-r border-slate-800 shrink-0">
+      <aside className="hidden lg:flex flex-col w-56 bg-white border-r border-gray-200 dark:bg-slate-900 dark:border-slate-800 shrink-0">
         <SidebarContent />
       </aside>
 
@@ -147,7 +147,7 @@ export default function Layout() {
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-          <aside className="absolute left-0 top-0 bottom-0 w-64 bg-slate-900 border-r border-slate-800">
+          <aside className="absolute left-0 top-0 bottom-0 w-64 bg-white border-r border-gray-200 dark:bg-slate-900 dark:border-slate-800">
             <button onClick={() => setMobileOpen(false)} className="absolute top-4 right-4 text-slate-400">
               <X className="w-5 h-5" />
             </button>
@@ -159,13 +159,13 @@ export default function Layout() {
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Mobile header */}
-        <header className="lg:hidden flex items-center gap-3 px-4 py-3 bg-slate-900 border-b border-slate-800 shrink-0">
-          <button onClick={() => setMobileOpen(true)} className="text-slate-400">
+        <header className="lg:hidden flex items-center gap-3 px-4 py-3 bg-white border-b border-gray-200 dark:bg-slate-900 dark:border-slate-800 shrink-0">
+          <button onClick={() => setMobileOpen(true)} className="text-gray-500 dark:text-slate-400">
             <Menu className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-2">
             <HardHat className="w-4 h-4 text-brand-400" />
-            <span className="font-bold text-sm">FieldOps</span>
+            <span className="font-bold text-sm">Stryda</span>
           </div>
         </header>
 

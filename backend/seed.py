@@ -1,5 +1,5 @@
 """
-Seed script for FieldOps MVP demo data.
+Seed script for Stryda MVP demo data.
 Run: python seed.py
 """
 import sys

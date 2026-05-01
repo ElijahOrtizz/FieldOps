@@ -111,7 +111,7 @@ function JobForm({ job, onSave, onClose }) {
         </div>
       </div>
       <div className="form-group">
-        <label className="label">Sage Job ID <span className="text-slate-600 normal-case font-normal">(for future Sage sync)</span></label>
+        <label className="label">Sage Job ID <span className="text-gray-400 dark:text-slate-600 normal-case font-normal">(for future Sage sync)</span></label>
         <input className="input font-mono" placeholder="SAGE-J-XXX" value={form.sage_job_id} onChange={e => setForm({...form, sage_job_id: e.target.value})} />
       </div>
       <div className="form-group">
@@ -157,7 +157,7 @@ export default function JobsPage() {
       <div className="flex gap-2 mb-5">
         {['active', 'on_hold', 'completed', 'all'].map(s => (
           <button key={s} onClick={() => setFilter(s)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium capitalize transition-colors ${filter === s ? 'bg-brand-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-slate-200'}`}>
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium capitalize transition-colors ${filter === s ? 'bg-brand-600 text-white' : 'bg-gray-200 dark:bg-slate-800 text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-200'}`}>
             {s === 'all' ? 'All' : s.replace('_', ' ')}
           </button>
         ))}
@@ -184,11 +184,11 @@ export default function JobsPage() {
                 {filtered.map(job => (
                   <tr key={job.id} className="table-row">
                     <td className="td">
-                      <p className="font-mono font-semibold text-brand-400">{job.job_number}</p>
-                      <p className="text-sm text-slate-200">{job.job_name}</p>
+                      <p className="font-mono font-semibold text-brand-600 dark:text-brand-400">{job.job_number}</p>
+                      <p className="text-sm text-gray-800 dark:text-slate-200">{job.job_name}</p>
                     </td>
                     <td className="td text-sm">{job.client_name || '—'}</td>
-                    <td className="td text-sm text-slate-400">{[job.city, job.state].filter(Boolean).join(', ') || '—'}</td>
+                    <td className="td text-sm text-gray-600 dark:text-slate-400">{[job.city, job.state].filter(Boolean).join(', ') || '—'}</td>
                     <td className="td">
                       <span className={`text-xs font-medium capitalize px-2 py-1 rounded-full ${STATUS_COLORS[job.status]}`}>
                         {job.status?.replace('_', ' ')}
@@ -205,15 +205,15 @@ export default function JobsPage() {
                               style={{ width: `${Math.min(100, job.budget_used_pct)}%` }}
                             />
                           </div>
-                          <span className={`text-xs ${job.budget_used_pct > 90 ? 'text-red-400' : 'text-slate-400'}`}>
+                          <span className={`text-xs ${job.budget_used_pct > 90 ? 'text-red-600 dark:text-red-400' : 'text-gray-500 dark:text-slate-400'}`}>
                             {job.budget_used_pct}%
                           </span>
                         </div>
                       ) : '—'}
                     </td>
-                    <td className="td"><span className="font-mono text-xs text-slate-600">{job.sage_job_id || '—'}</span></td>
+                    <td className="td"><span className="font-mono text-xs text-gray-400 dark:text-slate-600">{job.sage_job_id || '—'}</span></td>
                     <td className="td">
-                      <button onClick={() => setModal(job)} className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-500 hover:text-slate-300">
+                      <button onClick={() => setModal(job)} className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-400 dark:text-slate-500 hover:text-gray-700 dark:hover:text-slate-300">
                         <Edit2 className="w-4 h-4" />
                       </button>
                     </td>

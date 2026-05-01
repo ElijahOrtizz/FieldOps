@@ -41,11 +41,14 @@ def ensure_default_admin():
 
 ensure_default_admin()
 
-app = FastAPI(title="FieldOps API", version="2.3.0")
+app = FastAPI(title="Stryda API", version="2.3.0")
+
+_cors_env = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:5173")
+CORS_ORIGINS = [o.strip() for o in _cors_env.split(",") if o.strip()]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

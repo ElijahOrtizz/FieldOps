@@ -226,7 +226,7 @@ class ExportBatch(Base):
 class CompanySettings(Base):
     __tablename__ = "company_settings"
     id = Column(Integer, primary_key=True, default=1)
-    company_name = Column(String, default="FieldOps")
+    company_name = Column(String, default="Stryda")
     default_pay_type = Column(String, default="Regular")
     overtime_threshold = Column(Float, default=8.0)
     sage_export_format = Column(String, default="sage_100")

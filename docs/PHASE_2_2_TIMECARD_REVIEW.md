@@ -1,8 +1,8 @@
-# FieldOps Phase 2.2 — Timecard Review & Payroll Workflow
+# Stryda Phase 2.2 — Timecard Review & Payroll Workflow
 
 ## Overview
 
-Phase 2.2 turns FieldOps into a full weekly payroll review tool. Admins and supervisors can now review timecards, edit entries, approve by day or week, lock payroll after review, print timecards, and export only the right entries to Sage.
+Phase 2.2 turns Stryda into a full weekly payroll review tool. Admins and supervisors can now review timecards, edit entries, approve by day or week, lock payroll after review, print timecards, and export only the right entries to Sage.
 
 ---
 

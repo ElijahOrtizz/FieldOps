@@ -23,12 +23,12 @@ export default function ExportHistoryPage() {
       {/* Summary */}
       <div className="grid grid-cols-2 gap-4 mb-6">
         <div className="card">
-          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Total Exports</p>
-          <p className="text-2xl font-bold text-slate-100">{history.length}</p>
+          <p className="text-xs text-gray-500 dark:text-slate-500 uppercase tracking-wider mb-1">Total Exports</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-slate-100">{history.length}</p>
         </div>
         <div className="card">
-          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Records Exported</p>
-          <p className="text-2xl font-bold text-slate-100">{totalExported}</p>
+          <p className="text-xs text-gray-500 dark:text-slate-500 uppercase tracking-wider mb-1">Records Exported</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-slate-100">{totalExported}</p>
         </div>
       </div>
 
@@ -43,7 +43,7 @@ export default function ExportHistoryPage() {
           <div className="card !p-0 overflow-hidden">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-slate-800">
+                <tr className="border-b border-gray-200 dark:border-slate-800">
                   <th className="th">File</th>
                   <th className="th">Records</th>
                   <th className="th">Exported By</th>
@@ -56,15 +56,15 @@ export default function ExportHistoryPage() {
                     <td className="td">
                       <div className="flex items-center gap-2">
                         <FileSpreadsheet className="w-4 h-4 text-brand-400 shrink-0" />
-                        <span className="font-mono text-xs text-brand-300">{batch.file_name || `export_${batch.id}.csv`}</span>
+                        <span className="font-mono text-xs text-brand-600 dark:text-brand-300">{batch.file_name || `export_${batch.id}.csv`}</span>
                       </div>
                     </td>
                     <td className="td">
-                      <span className="font-semibold text-slate-200">{batch.record_count}</span>
-                      <span className="text-slate-500 text-xs ml-1">entries</span>
+                      <span className="font-semibold text-gray-800 dark:text-slate-200">{batch.record_count}</span>
+                      <span className="text-gray-500 dark:text-slate-500 text-xs ml-1">entries</span>
                     </td>
-                    <td className="td text-slate-400 text-sm">{batch.exported_by || '—'}</td>
-                    <td className="td text-slate-400 text-sm">
+                    <td className="td text-gray-600 dark:text-slate-400 text-sm">{batch.exported_by || '—'}</td>
+                    <td className="td text-gray-600 dark:text-slate-400 text-sm">
                       {batch.exported_at ? format(new Date(batch.exported_at), 'MMM d, yyyy h:mm a') : '—'}
                     </td>
                   </tr>

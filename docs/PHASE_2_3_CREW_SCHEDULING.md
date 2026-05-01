@@ -1,4 +1,4 @@
-# FieldOps Phase 2.3 — Crew Scheduling + Job Assignment Board
+# Stryda Phase 2.3 — Crew Scheduling + Job Assignment Board
 
 ## Overview
 

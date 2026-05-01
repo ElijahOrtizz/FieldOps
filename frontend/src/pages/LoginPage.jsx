@@ -49,13 +49,13 @@ export default function LoginPage() {
           <div className="w-14 h-14 bg-brand-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-brand-600/25">
             <HardHat className="w-7 h-7 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-100">FieldOps</h1>
+          <h1 className="text-2xl font-bold text-slate-100">Stryda</h1>
           <p className="text-slate-500 text-sm mt-1">Field Operations Platform</p>
         </div>
 
         {/* Form */}
         <div className="card">
-          <h2 className="text-lg font-semibold text-slate-100 mb-5">Sign in to your account</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-slate-100 mb-5">Sign in to your account</h2>
 
           {error && (
             <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2 text-red-400 text-sm mb-4">
@@ -67,7 +67,7 @@ export default function LoginPage() {
             <div className="form-group">
               <label className="label">Email</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-500" />
                 <input
                   type="email"
                   className="input pl-9"
@@ -82,7 +82,7 @@ export default function LoginPage() {
             <div className="form-group">
               <label className="label">Password</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-500" />
                 <input
                   type={showPass ? 'text' : 'password'}
                   className="input pl-9 pr-9"
@@ -106,14 +106,14 @@ export default function LoginPage() {
           </form>
 
           {/* Demo logins */}
-          <div className="mt-5 pt-4 border-t border-slate-800">
-            <p className="text-xs text-slate-500 mb-2 text-center">Demo accounts</p>
+          <div className="mt-5 pt-4 border-t border-gray-200 dark:border-slate-800">
+            <p className="text-xs text-gray-500 dark:text-slate-500 mb-2 text-center">Demo accounts</p>
             <div className="grid grid-cols-3 gap-2">
               {['admin', 'supervisor', 'worker'].map(role => (
                 <button
                   key={role}
                   onClick={() => demoLogin(role)}
-                  className="text-xs py-1.5 px-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 capitalize transition-colors"
+                  className="text-xs py-1.5 px-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 capitalize transition-colors"
                 >
                   {role}
                 </button>
@@ -123,7 +123,7 @@ export default function LoginPage() {
         </div>
 
         <p className="text-center text-slate-600 text-xs mt-4">
-          FieldOps MVP — Sage-ready field time tracking
+          Stryda — Sage-ready field time tracking
         </p>
       </div>
     </div>

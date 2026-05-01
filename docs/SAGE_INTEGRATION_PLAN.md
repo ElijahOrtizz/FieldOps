@@ -1,8 +1,8 @@
-# FieldOps — Sage Integration Plan
+# Stryda — Sage Integration Plan
 
 ## Overview
 
-FieldOps is designed Sage-first. The MVP uses manual CSV export as a bridge, with all data structures and IDs pre-mapped to Sage's schema so that a direct API/connector integration can be added in a future version with minimal refactoring.
+Stryda is designed Sage-first. The MVP uses manual CSV export as a bridge, with all data structures and IDs pre-mapped to Sage's schema so that a direct API/connector integration can be added in a future version with minimal refactoring.
 
 ---
 
@@ -14,7 +14,7 @@ All approved time entries can be exported as a CSV from the **Export** page (`/e
 
 ### CSV Columns
 
-| Column | Source in FieldOps | Sage Field |
+| Column | Source in Stryda | Sage Field |
 |---|---|---|
 | `Employee_ID` | `employees.sage_employee_id` | Employee ID |
 | `Employee_Name` | `employees.full_name` | Employee Name |
@@ -35,7 +35,7 @@ All approved time entries can be exported as a CSV from the **Export** page (`/e
 
 ### How to Import into Sage
 
-1. From FieldOps **Export** page, select date range and jobs, then click **Download Sage CSV**
+1. From Stryda **Export** page, select date range and jobs, then click **Download Sage CSV**
 2. Optionally check **Mark as Exported** to prevent duplicate exports
 3. Open Sage 100 Contractor → **5-2-2 Payroll Records** → Import
 4. Map columns to Sage fields (one-time setup)
@@ -50,12 +50,12 @@ All approved time entries can be exported as a CSV from the **Export** page (`/e
 - Sage 100 Contractor or Sage 300 CRE with API/ODBC access enabled
 - A middleware service (Python FastAPI or Node) that acts as a Sage connector
 - OAuth or API key credentials from Sage (varies by version)
-- Mapping layer between FieldOps internal IDs and Sage IDs (already partially built — see `sage_employee_id`, `sage_job_id`, `sage_cost_code` fields)
+- Mapping layer between Stryda internal IDs and Sage IDs (already partially built — see `sage_employee_id`, `sage_job_id`, `sage_cost_code` fields)
 
 ### Integration Architecture
 
 ```
-FieldOps Backend (FastAPI)
+Stryda Backend (FastAPI)
         │
         ▼
   Sage Connector Service
@@ -72,7 +72,7 @@ Sage API   ODBC/Direct
 ### Endpoints to Build
 
 ```
-POST /sage/sync/employees     → Pull employees from Sage into FieldOps
+POST /sage/sync/employees     → Pull employees from Sage into Stryda
 POST /sage/sync/jobs          → Pull active jobs from Sage
 POST /sage/sync/cost-codes    → Pull cost codes from Sage
 POST /sage/push/time-entries  → Push approved entries to Sage payroll
@@ -83,7 +83,7 @@ POST /sage/push/job-costs     → Push job cost transactions to Sage
 
 ## Data Flow: What Gets Imported FROM Sage
 
-| Data | Sage Source | FieldOps Destination | Frequency |
+| Data | Sage Source | Stryda Destination | Frequency |
 |---|---|---|---|
 | Employees | Sage Employee records | `employees` table | On sync / daily |
 | Jobs | Sage Job records | `jobs` table | On sync / daily |
@@ -95,7 +95,7 @@ POST /sage/push/job-costs     → Push job cost transactions to Sage
 
 ## Data Flow: What Gets Pushed TO Sage
 
-| Data | FieldOps Source | Sage Destination | Trigger |
+| Data | Stryda Source | Sage Destination | Trigger |
 |---|---|---|---|
 | Approved time entries | `time_entries` (approved) | Sage Payroll / Job Cost | On export or auto-nightly |
 | Expenses / Receipts | `receipts` table (future) | Sage AP / Job Cost | On approval |
@@ -107,7 +107,7 @@ POST /sage/push/job-costs     → Push job cost transactions to Sage
 
 ## Sage ID Mapping Strategy
 
-All FieldOps entities that correspond to a Sage record carry a `sage_*` ID field:
+All Stryda entities that correspond to a Sage record carry a `sage_*` ID field:
 
 - `employees.sage_employee_id` — maps to Sage Employee ID
 - `jobs.sage_job_id` — maps to Sage Job Number
@@ -115,7 +115,7 @@ All FieldOps entities that correspond to a Sage record carry a `sage_*` ID field
 
 These fields are nullable in MVP (manual entry optional). When Sage sync is live, they will be populated automatically on import and used as the join key on export.
 
-**Rule:** FieldOps is the source of truth for time entry data. Sage is the source of truth for employee, job, and cost code master data.
+**Rule:** Stryda is the source of truth for time entry data. Sage is the source of truth for employee, job, and cost code master data.
 
 ---
 

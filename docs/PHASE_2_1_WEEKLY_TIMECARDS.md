@@ -1,4 +1,4 @@
-# FieldOps Phase 2.1 — Weekly Timecards
+# Stryda Phase 2.1 — Weekly Timecards
 
 ## Feature Overview
 
@@ -115,7 +115,7 @@ All 7 days are always included in the response, even days with no entries (`entr
 
 1. Start the backend: `python3 -m uvicorn main:app --reload --port 8000`
 2. Start the frontend: `npm run dev`
-3. Login as admin: `admin@fieldops.com / admin123`
+3. Login as admin: `admin@stryda.com / admin123`
 4. Click **Weekly Timecards** in the sidebar
 5. Current week should load with seeded demo data (check that week has entries — seed data is randomized across past 4 weeks)
 6. Use the `←` arrow to go back one week until you see employees with hours

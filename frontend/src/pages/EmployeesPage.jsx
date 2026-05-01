@@ -92,7 +92,7 @@ function EmployeeForm({ employee, employees, onSave, onClose }) {
         </div>
       </div>
       <div className="form-group">
-        <label className="label">Sage Employee ID <span className="text-slate-600 normal-case font-normal">(for future Sage sync)</span></label>
+        <label className="label">Sage Employee ID <span className="text-gray-400 dark:text-slate-600 normal-case font-normal">(for future Sage sync)</span></label>
         <input className="input font-mono" placeholder="SAGE-E001" value={form.sage_employee_id} onChange={e => setForm({...form, sage_employee_id: e.target.value})} />
       </div>
       <div className="flex gap-3 justify-end pt-2">
@@ -134,7 +134,7 @@ export default function EmployeesPage() {
     load()
   }
 
-  const roleColors = { admin: 'text-purple-400', supervisor: 'text-brand-400', worker: 'text-slate-400' }
+  const roleColors = { admin: 'text-purple-600 dark:text-purple-400', supervisor: 'text-brand-600 dark:text-brand-400', worker: 'text-gray-500 dark:text-slate-400' }
 
   return (
     <div>
@@ -150,7 +150,7 @@ export default function EmployeesPage() {
 
       <div className="flex gap-3 mb-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-500" />
           <input
             className="input pl-9"
             placeholder="Search by name or employee #..."
@@ -192,8 +192,8 @@ export default function EmployeesPage() {
                 {filtered.map(emp => (
                   <tr key={emp.id} className={`table-row ${!emp.is_active ? 'opacity-50' : ''}`}>
                     <td className="td">
-                      <p className="font-medium text-slate-200">{emp.full_name}</p>
-                      <p className="text-xs font-mono text-slate-500">{emp.employee_number}</p>
+                      <p className="font-medium text-gray-800 dark:text-slate-200">{emp.full_name}</p>
+                      <p className="text-xs font-mono text-gray-500 dark:text-slate-500">{emp.employee_number}</p>
                     </td>
                     <td className="td text-sm">{emp.trade || '—'}</td>
                     <td className="td text-sm">{emp.supervisor_name || '—'}</td>
@@ -207,17 +207,17 @@ export default function EmployeesPage() {
                       <span className="font-mono text-xs text-slate-500">{emp.sage_employee_id || '—'}</span>
                     </td>
                     <td className="td">
-                      <span className={`text-xs font-medium ${emp.is_active ? 'text-emerald-400' : 'text-slate-600'}`}>
+                      <span className={`text-xs font-medium ${emp.is_active ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-400 dark:text-slate-600'}`}>
                         {emp.is_active ? 'Active' : 'Inactive'}
                       </span>
                     </td>
                     <td className="td">
                       <div className="flex gap-1">
-                        <button onClick={() => setModal(emp)} className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-500 hover:text-slate-300">
+                        <button onClick={() => setModal(emp)} className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-400 dark:text-slate-500 hover:text-gray-700 dark:hover:text-slate-300">
                           <Edit2 className="w-4 h-4" />
                         </button>
                         {emp.is_active && (
-                          <button onClick={() => handleDeactivate(emp.id)} className="p-1.5 rounded-lg hover:bg-red-500/10 text-slate-500 hover:text-red-400">
+                          <button onClick={() => handleDeactivate(emp.id)} className="p-1.5 rounded-lg hover:bg-red-500/10 text-gray-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400">
                             <UserX className="w-4 h-4" />
                           </button>
                         )}

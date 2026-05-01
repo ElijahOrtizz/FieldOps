@@ -5,17 +5,17 @@ import { StatCard, PageHeader, LoadingSpinner } from '../components/common'
 import { Users, Briefcase, Clock, CheckSquare, Download, BarChart3, Tag, Package, History, Activity, Settings } from 'lucide-react'
 
 const QUICK_LINKS = [
-  { to: '/supervisor/approvals', label: 'Approval Queue', icon: CheckSquare, color: 'text-amber-400', bg: 'bg-amber-500/10' },
-  { to: '/admin/time-entries', label: 'Time Entries', icon: Clock, color: 'text-blue-400', bg: 'bg-blue-500/10' },
-  { to: '/admin/jobs', label: 'Jobs', icon: Briefcase, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-  { to: '/admin/employees', label: 'Employees', icon: Users, color: 'text-purple-400', bg: 'bg-purple-500/10' },
-  { to: '/admin/cost-codes', label: 'Cost Codes', icon: Tag, color: 'text-slate-400', bg: 'bg-slate-500/10' },
-  { to: '/material-requests', label: 'Material Requests', icon: Package, color: 'text-orange-400', bg: 'bg-orange-500/10' },
-  { to: '/admin/export', label: 'Export to Sage', icon: Download, color: 'text-cyan-400', bg: 'bg-cyan-500/10' },
-  { to: '/admin/export-history', label: 'Export History', icon: History, color: 'text-indigo-400', bg: 'bg-indigo-500/10' },
-  { to: '/reports', label: 'Reports', icon: BarChart3, color: 'text-pink-400', bg: 'bg-pink-500/10' },
-  { to: '/admin/audit-log', label: 'Audit Log', icon: Activity, color: 'text-teal-400', bg: 'bg-teal-500/10' },
-  { to: '/admin/settings', label: 'Settings', icon: Settings, color: 'text-slate-400', bg: 'bg-slate-500/10' },
+  { to: '/supervisor/approvals', label: 'Approval Queue', icon: CheckSquare, color: 'text-amber-500 dark:text-amber-400', bg: 'bg-amber-500/10' },
+  { to: '/admin/time-entries', label: 'Time Entries', icon: Clock, color: 'text-blue-500 dark:text-blue-400', bg: 'bg-blue-500/10' },
+  { to: '/admin/jobs', label: 'Jobs', icon: Briefcase, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-500/10' },
+  { to: '/admin/employees', label: 'Employees', icon: Users, color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-500/10' },
+  { to: '/admin/cost-codes', label: 'Cost Codes', icon: Tag, color: 'text-gray-500 dark:text-slate-400', bg: 'bg-slate-500/10' },
+  { to: '/material-requests', label: 'Material Requests', icon: Package, color: 'text-orange-500 dark:text-orange-400', bg: 'bg-orange-500/10' },
+  { to: '/admin/export', label: 'Export to Sage', icon: Download, color: 'text-cyan-600 dark:text-cyan-400', bg: 'bg-cyan-500/10' },
+  { to: '/admin/export-history', label: 'Export History', icon: History, color: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-500/10' },
+  { to: '/reports', label: 'Reports', icon: BarChart3, color: 'text-pink-600 dark:text-pink-400', bg: 'bg-pink-500/10' },
+  { to: '/admin/audit-log', label: 'Audit Log', icon: Activity, color: 'text-teal-600 dark:text-teal-400', bg: 'bg-teal-500/10' },
+  { to: '/admin/settings', label: 'Settings', icon: Settings, color: 'text-gray-500 dark:text-slate-400', bg: 'bg-slate-500/10' },
 ]
 
 export default function AdminDashboard() {
@@ -37,7 +37,7 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      <PageHeader title="Admin Dashboard" subtitle="FieldOps v2 — full operations overview" />
+      <PageHeader title="Admin Dashboard" subtitle="Stryda v2 — full operations overview" />
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -55,18 +55,18 @@ export default function AdminDashboard() {
 
       {/* Quick Links */}
       <div className="card mb-5">
-        <h2 className="font-semibold text-slate-200 mb-4">Quick Access</h2>
+        <h2 className="font-semibold text-gray-800 dark:text-slate-200 mb-4">Quick Access</h2>
         <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2">
           {QUICK_LINKS.map(({ to, label, icon: Icon, color, bg }) => (
             <Link
               key={to}
               to={to}
-              className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-slate-800 transition-colors text-center"
+              className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors text-center"
             >
               <div className={`w-9 h-9 rounded-lg ${bg} flex items-center justify-center`}>
                 <Icon className={`w-4 h-4 ${color}`} />
               </div>
-              <span className="text-[11px] text-slate-400 leading-tight">{label}</span>
+              <span className="text-[11px] text-gray-600 dark:text-slate-400 leading-tight">{label}</span>
             </Link>
           ))}
         </div>
@@ -76,8 +76,8 @@ export default function AdminDashboard() {
       {jobCosts.length > 0 && (
         <div className="card">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-slate-200">Top Jobs by Approved Hours</h2>
-            <Link to="/reports" className="text-xs text-brand-400 hover:text-brand-300">Full Reports →</Link>
+            <h2 className="font-semibold text-gray-800 dark:text-slate-200">Top Jobs by Approved Hours</h2>
+            <Link to="/reports" className="text-xs text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300">Full Reports →</Link>
           </div>
           <div className="space-y-2">
             {Object.values(jobCosts.reduce((acc, r) => {
@@ -85,10 +85,10 @@ export default function AdminDashboard() {
               acc[r.job_id].hours += r.total_hours
               return acc
             }, {})).map((job, i) => (
-              <div key={i} className="flex items-center gap-4 p-2.5 bg-slate-800/40 rounded-lg">
-                <span className="font-mono text-xs text-brand-400 w-24 shrink-0">{job.job_number}</span>
-                <span className="text-sm text-slate-300 flex-1 truncate">{job.job_name}</span>
-                <span className="text-sm font-bold text-slate-100 shrink-0">{job.hours.toFixed(1)}h</span>
+              <div key={i} className="flex items-center gap-4 p-2.5 bg-gray-100 dark:bg-slate-800/40 rounded-lg">
+                <span className="font-mono text-xs text-brand-600 dark:text-brand-400 w-24 shrink-0">{job.job_number}</span>
+                <span className="text-sm text-gray-700 dark:text-slate-300 flex-1 truncate">{job.job_name}</span>
+                <span className="text-sm font-bold text-gray-900 dark:text-slate-100 shrink-0">{job.hours.toFixed(1)}h</span>
               </div>
             ))}
           </div>

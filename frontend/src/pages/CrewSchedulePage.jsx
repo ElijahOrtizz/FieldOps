@@ -156,10 +156,10 @@ function AssignModal({ date, employees, jobs, onSave, onClose, editAssignment })
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-      <div className="bg-slate-900 border border-slate-700 rounded-xl w-full max-w-lg shadow-2xl flex flex-col max-h-[90vh]">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800 shrink-0">
-          <h2 className="font-semibold text-slate-100">{isEdit ? 'Edit Assignment' : 'Assign Crew'}</h2>
-          <button onClick={onClose} className="text-slate-500 hover:text-slate-300"><X className="w-4 h-4" /></button>
+      <div className="bg-white border border-gray-200 dark:bg-slate-900 dark:border-slate-700 rounded-xl w-full max-w-lg shadow-2xl flex flex-col max-h-[90vh]">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-slate-800 shrink-0">
+          <h2 className="font-semibold text-gray-900 dark:text-slate-100">{isEdit ? 'Edit Assignment' : 'Assign Crew'}</h2>
+          <button onClick={onClose} className="text-gray-400 dark:text-slate-500 hover:text-gray-700 dark:hover:text-slate-300"><X className="w-4 h-4" /></button>
         </div>
 
         <div className="px-5 py-4 overflow-y-auto flex-1 space-y-4">
@@ -230,18 +230,18 @@ function AssignModal({ date, employees, jobs, onSave, onClose, editAssignment })
                 <input className="input !pl-7 text-xs" placeholder="Search name, trade…"
                   value={empSearch} onChange={e => setEmpSearch(e.target.value)} />
               </div>
-              <div className="max-h-40 overflow-y-auto space-y-1 border border-slate-800 rounded-lg p-2 bg-slate-900/50">
-                {filteredEmps.length === 0 && <p className="text-xs text-slate-600 text-center py-2">No employees match</p>}
+              <div className="max-h-40 overflow-y-auto space-y-1 border border-gray-200 dark:border-slate-800 rounded-lg p-2 bg-gray-50 dark:bg-slate-900/50">
+                {filteredEmps.length === 0 && <p className="text-xs text-gray-400 dark:text-slate-600 text-center py-2">No employees match</p>}
                 {filteredEmps.map(e => {
                   const selected = form.employee_ids.includes(e.id)
                   return (
                     <button key={e.id} onClick={() => toggleEmp(e.id)}
-                      className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left transition-colors ${selected ? 'bg-brand-600/20 border border-brand-500/30' : 'hover:bg-slate-800'}`}>
-                      <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 ${selected ? 'bg-brand-600 border-brand-500' : 'border-slate-600'}`}>
+                      className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left transition-colors ${selected ? 'bg-brand-600/20 border border-brand-500/30' : 'hover:bg-gray-100 dark:hover:bg-slate-800'}`}>
+                      <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 ${selected ? 'bg-brand-600 border-brand-500' : 'border-gray-300 dark:border-slate-600'}`}>
                         {selected && <span className="text-[10px] text-white font-bold">✓</span>}
                       </div>
-                      <span className="text-xs text-slate-300 flex-1">{e.first_name} {e.last_name}</span>
-                      <span className="text-[10px] text-slate-600">{e.trade || ''}</span>
+                      <span className="text-xs text-gray-700 dark:text-slate-300 flex-1">{e.first_name} {e.last_name}</span>
+                      <span className="text-[10px] text-gray-400 dark:text-slate-600">{e.trade || ''}</span>
                     </button>
                   )
                 })}
@@ -277,7 +277,7 @@ function AssignModal({ date, employees, jobs, onSave, onClose, editAssignment })
           {error && <p className="text-xs text-red-400">{error}</p>}
         </div>
 
-        <div className="px-5 py-4 border-t border-slate-800 flex gap-3 shrink-0">
+        <div className="px-5 py-4 border-t border-gray-200 dark:border-slate-800 flex gap-3 shrink-0">
           <button onClick={handleSave} disabled={loading} className="btn-primary">
             {loading ? 'Saving…' : isEdit ? 'Save Changes' : form.employee_ids.length > 1 ? `Assign ${form.employee_ids.length} Employees` : 'Assign'}
           </button>
@@ -310,7 +310,7 @@ function PrintArea({ days, weekLabel, printDay }) {
   const toPrint = printDay ? days.filter(d => d.date === printDay) : days
   return (
     <div id="sched-print" style={{ display: 'none' }}>
-      <h1>FieldOps — Crew Schedule &nbsp;·&nbsp; {weekLabel}</h1>
+      <h1>Stryda — Crew Schedule &nbsp;·&nbsp; {weekLabel}</h1>
       <p style={{ fontSize: 10, color: '#777', marginBottom: 12 }}>Printed: {format(new Date(), 'MMM d, yyyy h:mm a')}</p>
       {toPrint.map(day => (
         <div key={day.date}>
@@ -411,13 +411,13 @@ function VarianceTab({ weekStart, employees, jobs }) {
         <div className="space-y-3">
           {variance.issues.map((issue, i) => (
             <div key={i} className="card !p-0 overflow-hidden">
-              <div className="px-4 py-3 bg-slate-800/40 flex items-start gap-3">
+              <div className="px-4 py-3 bg-gray-100 dark:bg-slate-800/40 flex items-start gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <span className="font-semibold text-slate-100 text-sm">{issue.employee_name}</span>
-                    <span className="text-[10px] text-slate-500">#{issue.employee_number}</span>
-                    <span className="text-xs text-slate-500">·</span>
-                    <span className="text-xs text-slate-400">{issue.day_name} {fmtDate(issue.date)}</span>
+                    <span className="font-semibold text-gray-900 dark:text-slate-100 text-sm">{issue.employee_name}</span>
+                    <span className="text-[10px] text-gray-500 dark:text-slate-500">#{issue.employee_number}</span>
+                    <span className="text-xs text-gray-500 dark:text-slate-500">·</span>
+                    <span className="text-xs text-gray-600 dark:text-slate-400">{issue.day_name} {fmtDate(issue.date)}</span>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {issue.issue_types.map(type => {
@@ -433,19 +433,19 @@ function VarianceTab({ weekStart, employees, jobs }) {
                 <div className="text-right shrink-0">
                   <div className="flex items-center gap-3">
                     <div className="text-center">
-                      <p className="text-[9px] text-slate-600 uppercase">Sched.</p>
-                      <p className="text-sm font-bold text-slate-300">{issue.scheduled_hours}h</p>
+                      <p className="text-[9px] text-gray-500 dark:text-slate-600 uppercase">Sched.</p>
+                      <p className="text-sm font-bold text-gray-700 dark:text-slate-300">{issue.scheduled_hours}h</p>
                     </div>
-                    <ArrowLeftRight className="w-3 h-3 text-slate-700" />
+                    <ArrowLeftRight className="w-3 h-3 text-gray-400 dark:text-slate-700" />
                     <div className="text-center">
-                      <p className="text-[9px] text-slate-600 uppercase">Actual</p>
+                      <p className="text-[9px] text-gray-500 dark:text-slate-600 uppercase">Actual</p>
                       <p className={`text-sm font-bold ${issue.actual_hours > issue.scheduled_hours ? 'text-amber-400' : issue.actual_hours === 0 ? 'text-red-400' : 'text-slate-300'}`}>
                         {issue.actual_hours}h
                       </p>
                     </div>
                     <div className="text-center">
-                      <p className="text-[9px] text-slate-600 uppercase">Δ</p>
-                      <p className={`text-sm font-bold ${issue.variance_hours > 0 ? 'text-amber-400' : issue.variance_hours < 0 ? 'text-slate-500' : 'text-slate-400'}`}>
+                      <p className="text-[9px] text-gray-500 dark:text-slate-600 uppercase">Δ</p>
+                      <p className={`text-sm font-bold ${issue.variance_hours > 0 ? 'text-amber-500 dark:text-amber-400' : issue.variance_hours < 0 ? 'text-gray-500 dark:text-slate-500' : 'text-gray-400 dark:text-slate-400'}`}>
                         {issue.variance_hours > 0 ? '+' : ''}{issue.variance_hours}h
                       </p>
                     </div>
@@ -455,24 +455,24 @@ function VarianceTab({ weekStart, employees, jobs }) {
               {/* Scheduled vs Actual job detail */}
               <div className="px-4 py-2.5 grid grid-cols-2 gap-4 text-xs">
                 <div>
-                  <p className="text-[9px] text-slate-600 uppercase font-bold mb-1">Scheduled</p>
+                  <p className="text-[9px] text-gray-500 dark:text-slate-600 uppercase font-bold mb-1">Scheduled</p>
                   {issue.scheduled_jobs.length === 0
-                    ? <p className="text-slate-700 italic">Not scheduled</p>
+                    ? <p className="text-gray-400 dark:text-slate-700 italic">Not scheduled</p>
                     : issue.scheduled_jobs.map((j, k) => (
-                      <p key={k} className="text-slate-400">
-                        <span className="font-mono text-brand-500">{j.job_number}</span> {j.job_name}
-                        <span className="text-slate-600 ml-1">({j.hours}h)</span>
+                      <p key={k} className="text-gray-600 dark:text-slate-400">
+                        <span className="font-mono text-brand-600 dark:text-brand-500">{j.job_number}</span> {j.job_name}
+                        <span className="text-gray-400 dark:text-slate-600 ml-1">({j.hours}h)</span>
                       </p>
                     ))}
                 </div>
                 <div>
-                  <p className="text-[9px] text-slate-600 uppercase font-bold mb-1">Actual Timecard</p>
+                  <p className="text-[9px] text-gray-500 dark:text-slate-600 uppercase font-bold mb-1">Actual Timecard</p>
                   {issue.actual_jobs.length === 0
-                    ? <p className="text-red-400 italic">No timecard</p>
+                    ? <p className="text-red-500 dark:text-red-400 italic">No timecard</p>
                     : issue.actual_jobs.map((j, k) => (
-                      <p key={k} className="text-slate-400">
-                        <span className="font-mono text-brand-500">{j.job_number}</span> {j.job_name}
-                        <span className="text-slate-600 ml-1">({j.hours}h · {j.status})</span>
+                      <p key={k} className="text-gray-600 dark:text-slate-400">
+                        <span className="font-mono text-brand-600 dark:text-brand-500">{j.job_number}</span> {j.job_name}
+                        <span className="text-gray-400 dark:text-slate-600 ml-1">({j.hours}h · {j.status})</span>
                       </p>
                     ))}
                 </div>
@@ -495,14 +495,14 @@ function DayColumn({ day, onAssign, onEdit, onRemove, canManage, onPrintDay }) {
   return (
     <div className="min-w-[180px] flex-1">
       {/* Day header */}
-      <div className="px-2 py-2 bg-slate-800/60 rounded-t-lg border-b border-slate-800 flex items-center justify-between">
+      <div className="px-2 py-2 bg-gray-100 dark:bg-slate-800/60 rounded-t-lg border-b border-gray-200 dark:border-slate-800 flex items-center justify-between">
         <div>
-          <p className="text-xs font-bold text-slate-300">{day.day_name.slice(0, 3)}</p>
-          <p className="text-[10px] text-slate-600">{fmtDate(day.date)}</p>
+          <p className="text-xs font-bold text-gray-700 dark:text-slate-300">{day.day_name.slice(0, 3)}</p>
+          <p className="text-[10px] text-gray-500 dark:text-slate-600">{fmtDate(day.date)}</p>
         </div>
         <div className="flex items-center gap-1.5">
           {day.total_planned_hours > 0 &&
-            <span className="text-[10px] font-bold text-slate-400">{day.total_planned_hours}h</span>}
+            <span className="text-[10px] font-bold text-gray-500 dark:text-slate-400">{day.total_planned_hours}h</span>}
           {canManage && (
             <button onClick={() => onAssign(day.date)}
               className="p-1 text-slate-600 hover:text-brand-400 transition-colors" title="Add assignment">
@@ -515,32 +515,32 @@ function DayColumn({ day, onAssign, onEdit, onRemove, canManage, onPrintDay }) {
       {/* Job cards */}
       <div className="space-y-2 pt-2 min-h-[100px]">
         {day.jobs.length === 0 && (
-          <p className="text-[9px] text-slate-800 text-center py-4 italic">No assignments</p>
+          <p className="text-[9px] text-gray-300 dark:text-slate-800 text-center py-4 italic">No assignments</p>
         )}
         {day.jobs.map(job => (
-          <div key={job.job_id} className="bg-slate-800/50 rounded-lg overflow-hidden border border-slate-800">
-            <div className="px-2 py-1.5 bg-slate-800/80">
-              <p className="font-mono text-[10px] text-brand-400 font-semibold leading-none">{job.job_number}</p>
-              <p className="text-[10px] text-slate-400 truncate">{job.job_name}</p>
+          <div key={job.job_id} className="bg-gray-50 dark:bg-slate-800/50 rounded-lg overflow-hidden border border-gray-200 dark:border-slate-800">
+            <div className="px-2 py-1.5 bg-gray-100 dark:bg-slate-800/80">
+              <p className="font-mono text-[10px] text-brand-600 dark:text-brand-400 font-semibold leading-none">{job.job_number}</p>
+              <p className="text-[10px] text-gray-600 dark:text-slate-400 truncate">{job.job_name}</p>
               {job.job_address && (
-                <p className="text-[9px] text-slate-700 flex items-center gap-0.5 mt-0.5">
+                <p className="text-[9px] text-gray-400 dark:text-slate-700 flex items-center gap-0.5 mt-0.5">
                   <MapPin className="w-2.5 h-2.5" />{job.job_address}
                 </p>
               )}
-              <p className="text-[9px] font-bold text-slate-500 mt-0.5">{job.total_planned_hours}h · {job.assignments.length} crew</p>
+              <p className="text-[9px] font-bold text-gray-500 dark:text-slate-500 mt-0.5">{job.total_planned_hours}h · {job.assignments.length} crew</p>
             </div>
             {/* Assigned employees */}
-            <div className="divide-y divide-slate-800/60">
+            <div className="divide-y divide-gray-200 dark:divide-slate-800/60">
               {job.assignments.map(a => (
                 <div key={a.id} className="px-2 py-1 flex items-center gap-1.5 group">
                   <div className="flex-1 min-w-0">
-                    <p className="text-[10px] text-slate-300 truncate font-medium">{a.employee_name}</p>
+                    <p className="text-[10px] text-gray-700 dark:text-slate-300 truncate font-medium">{a.employee_name}</p>
                     <div className="flex items-center gap-1.5">
-                      {a.role && <span className="text-[9px] text-slate-600">{a.role}</span>}
+                      {a.role && <span className="text-[9px] text-gray-500 dark:text-slate-600">{a.role}</span>}
                       {a.planned_start_time && (
-                        <span className="text-[9px] text-slate-700">{a.planned_start_time}–{a.planned_end_time}</span>
+                        <span className="text-[9px] text-gray-400 dark:text-slate-700">{a.planned_start_time}–{a.planned_end_time}</span>
                       )}
-                      <span className="text-[9px] font-bold text-slate-500">{a.planned_hours}h</span>
+                      <span className="text-[9px] font-bold text-gray-500 dark:text-slate-500">{a.planned_hours}h</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 no-print">
@@ -671,18 +671,18 @@ export default function CrewSchedulePage() {
       <PageHeader title="Crew Schedule" subtitle="Plan weekly crew assignments and compare against timecards" />
 
       {/* Sticky filter bar */}
-      <div className="sticky top-0 z-30 bg-slate-950/97 backdrop-blur-md border-b border-slate-800 -mx-6 px-6 py-2.5 mb-4 no-print shadow-lg shadow-black/20">
+      <div className="sticky top-0 z-30 bg-gray-50/97 dark:bg-slate-950/97 backdrop-blur-md border-b border-gray-200 dark:border-slate-800 -mx-6 px-6 py-2.5 mb-4 no-print shadow-lg shadow-black/20">
         <div className="flex flex-wrap gap-2 items-center">
           {/* Week nav */}
-          <div className="flex items-center gap-0.5 bg-slate-800/80 rounded-lg px-0.5 py-0.5 shrink-0">
-            <button onClick={prevWeek} className="p-1.5 rounded text-slate-400 hover:text-slate-200 hover:bg-slate-700 transition-colors">
+          <div className="flex items-center gap-0.5 bg-gray-100 dark:bg-slate-800/80 rounded-lg px-0.5 py-0.5 shrink-0">
+            <button onClick={prevWeek} className="p-1.5 rounded text-gray-500 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-200 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors">
               <ChevronLeft className="w-3.5 h-3.5" />
             </button>
             <div className="flex items-center gap-1.5 px-2.5">
               <CalendarRange className="w-3 h-3 text-brand-400 shrink-0" />
-              <span className="text-xs font-semibold text-slate-200 min-w-[110px] text-center">{weekLabel}</span>
+              <span className="text-xs font-semibold text-gray-700 dark:text-slate-200 min-w-[110px] text-center">{weekLabel}</span>
             </div>
-            <button onClick={nextWeek} className="p-1.5 rounded text-slate-400 hover:text-slate-200 hover:bg-slate-700 transition-colors">
+            <button onClick={nextWeek} className="p-1.5 rounded text-gray-500 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-200 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors">
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -692,13 +692,13 @@ export default function CrewSchedulePage() {
           )}
 
           {/* Tabs */}
-          <div className="flex bg-slate-800/60 rounded-lg p-0.5 gap-0.5 shrink-0">
+          <div className="flex bg-gray-100 dark:bg-slate-800/60 rounded-lg p-0.5 gap-0.5 shrink-0">
             <button onClick={() => setTab('schedule')}
-              className={`text-xs px-3 py-1 rounded-md transition-colors ${tab === 'schedule' ? 'bg-slate-700 text-slate-200' : 'text-slate-500 hover:text-slate-300'}`}>
+              className={`text-xs px-3 py-1 rounded-md transition-colors ${tab === 'schedule' ? 'bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 shadow-sm' : 'text-gray-500 dark:text-slate-500 hover:text-gray-700 dark:hover:text-slate-300'}`}>
               <span className="flex items-center gap-1.5"><ClipboardList className="w-3 h-3" />Schedule</span>
             </button>
             <button onClick={() => setTab('variance')}
-              className={`text-xs px-3 py-1 rounded-md transition-colors ${tab === 'variance' ? 'bg-slate-700 text-slate-200' : 'text-slate-500 hover:text-slate-300'}`}>
+              className={`text-xs px-3 py-1 rounded-md transition-colors ${tab === 'variance' ? 'bg-white dark:bg-slate-700 text-gray-800 dark:text-slate-200 shadow-sm' : 'text-gray-500 dark:text-slate-500 hover:text-gray-700 dark:hover:text-slate-300'}`}>
               <span className="flex items-center gap-1.5"><ArrowLeftRight className="w-3 h-3" />Variance</span>
             </button>
           </div>
@@ -791,16 +791,16 @@ export default function CrewSchedulePage() {
       {tab === 'schedule' && !loading && schedule && (
         <div className="grid grid-cols-3 gap-3 mb-4">
           <div className="card !py-2">
-            <p className="text-[9px] text-slate-600 uppercase tracking-wider mb-0.5">Total Planned</p>
-            <p className="text-base font-bold text-slate-100">{schedule.total_planned_hours}h</p>
+            <p className="text-[9px] text-gray-500 dark:text-slate-600 uppercase tracking-wider mb-0.5">Total Planned</p>
+            <p className="text-base font-bold text-gray-900 dark:text-slate-100">{schedule.total_planned_hours}h</p>
           </div>
           <div className="card !py-2">
-            <p className="text-[9px] text-slate-600 uppercase tracking-wider mb-0.5">Employees Scheduled</p>
-            <p className="text-base font-bold text-brand-400">{schedule.employee_totals.length}</p>
+            <p className="text-[9px] text-gray-500 dark:text-slate-600 uppercase tracking-wider mb-0.5">Employees Scheduled</p>
+            <p className="text-base font-bold text-brand-500 dark:text-brand-400">{schedule.employee_totals.length}</p>
           </div>
           <div className="card !py-2">
-            <p className="text-[9px] text-slate-600 uppercase tracking-wider mb-0.5">Assignments</p>
-            <p className="text-base font-bold text-slate-300">{schedule.days.reduce((s, d) => s + d.assignment_count, 0)}</p>
+            <p className="text-[9px] text-gray-500 dark:text-slate-600 uppercase tracking-wider mb-0.5">Assignments</p>
+            <p className="text-base font-bold text-gray-700 dark:text-slate-300">{schedule.days.reduce((s, d) => s + d.assignment_count, 0)}</p>
           </div>
         </div>
       )}
@@ -828,18 +828,18 @@ export default function CrewSchedulePage() {
           {/* Per-employee weekly totals */}
           {schedule.employee_totals.length > 0 && (
             <div className="card mt-5">
-              <h3 className="font-semibold text-slate-200 text-sm mb-3 flex items-center gap-2">
+              <h3 className="font-semibold text-gray-800 dark:text-slate-200 text-sm mb-3 flex items-center gap-2">
                 <Users className="w-4 h-4 text-brand-400" /> Employee Weekly Totals
               </h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
                 {schedule.employee_totals.map(e => (
-                  <div key={e.employee_id} className="flex items-center gap-2 bg-slate-800/50 rounded-lg px-3 py-2">
-                    <div className="w-6 h-6 rounded-full bg-brand-800 flex items-center justify-center text-[10px] font-bold text-brand-300 shrink-0">
+                  <div key={e.employee_id} className="flex items-center gap-2 bg-gray-100 dark:bg-slate-800/50 rounded-lg px-3 py-2">
+                    <div className="w-6 h-6 rounded-full bg-brand-100 dark:bg-brand-800 flex items-center justify-center text-[10px] font-bold text-brand-600 dark:text-brand-300 shrink-0">
                       {e.employee_name.charAt(0)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs text-slate-300 truncate">{e.employee_name}</p>
-                      <p className="text-[9px] text-slate-600">{e.trade || 'Employee'}</p>
+                      <p className="text-xs text-gray-700 dark:text-slate-300 truncate">{e.employee_name}</p>
+                      <p className="text-[9px] text-gray-500 dark:text-slate-600">{e.trade || 'Employee'}</p>
                     </div>
                     <span className={`text-xs font-bold shrink-0 ${e.total_planned_hours >= 40 ? 'text-amber-400' : 'text-slate-300'}`}>
                       {e.total_planned_hours}h

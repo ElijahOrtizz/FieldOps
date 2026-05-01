@@ -105,13 +105,13 @@ function JobCostSnapshot() {
       {/* Header + week nav */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="font-semibold text-slate-100 text-base">Job Cost Snapshot</h2>
-          <p className="text-xs text-slate-500 mt-0.5">Weekly payroll health — rule-based warnings</p>
+          <h2 className="font-semibold text-gray-900 dark:text-slate-100 text-base">Job Cost Snapshot</h2>
+          <p className="text-xs text-gray-500 dark:text-slate-500 mt-0.5">Weekly payroll health — rule-based warnings</p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={prevWeek} className="text-xs px-2 py-1 rounded bg-slate-800 text-slate-400 hover:text-slate-200">←</button>
-          <span className="text-sm font-semibold text-slate-300 min-w-[120px] text-center">{weekLabel}</span>
-          <button onClick={nextWeek} className="text-xs px-2 py-1 rounded bg-slate-800 text-slate-400 hover:text-slate-200">→</button>
+          <button onClick={prevWeek} className="text-xs px-2 py-1 rounded bg-gray-200 dark:bg-slate-800 text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-200">←</button>
+          <span className="text-sm font-semibold text-gray-700 dark:text-slate-300 min-w-[120px] text-center">{weekLabel}</span>
+          <button onClick={nextWeek} className="text-xs px-2 py-1 rounded bg-gray-200 dark:bg-slate-800 text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-200">→</button>
           {!isCurrentWeek && (
             <button onClick={() => setWeekStart(todayMonday())} className="text-xs text-brand-400 hover:text-brand-300 underline underline-offset-2 ml-1">now</button>
           )}
@@ -121,13 +121,13 @@ function JobCostSnapshot() {
       {loading ? (
         <div className="flex justify-center py-8"><LoadingSpinner size="md" /></div>
       ) : !snapshot || snapshot.totals.total_hours === 0 ? (
-        <div className="card text-center py-8 text-slate-600 text-sm italic">No time entries for this week.</div>
+        <div className="card text-center py-8 text-gray-400 dark:text-slate-600 text-sm italic">No time entries for this week.</div>
       ) : (
         <>
           {/* Totals row */}
           <div className="grid grid-cols-3 lg:grid-cols-6 gap-3 mb-4">
             {[
-              { label: 'Total Hours', value: snapshot.totals.total_hours + 'h', color: 'text-slate-100' },
+              { label: 'Total Hours', value: snapshot.totals.total_hours + 'h', color: 'text-gray-900 dark:text-slate-100' },
               { label: 'Approved', value: snapshot.totals.approved_hours + 'h', color: 'text-emerald-400' },
               { label: 'Pending', value: snapshot.totals.submitted_hours + 'h', color: 'text-amber-400' },
               { label: 'Exported', value: snapshot.totals.exported_hours + 'h', color: 'text-purple-400' },
@@ -135,7 +135,7 @@ function JobCostSnapshot() {
               { label: 'Export Count', value: snapshot.totals.ready_for_export_count + ' entries', color: 'text-brand-400' },
             ].map(s => (
               <div key={s.label} className="card !py-2.5">
-                <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">{s.label}</p>
+                <p className="text-[10px] text-gray-500 dark:text-slate-500 uppercase tracking-wider mb-1">{s.label}</p>
                 <p className={`text-lg font-bold ${s.color}`}>{s.value}</p>
               </div>
             ))}
@@ -159,8 +159,8 @@ function JobCostSnapshot() {
                   {snapshot.overtime_risk.map(e => (
                     <div key={e.employee_id} className="flex items-center justify-between">
                       <div>
-                        <span className="text-xs font-semibold text-slate-200">{e.employee_name}</span>
-                        <span className="text-[10px] text-slate-500 ml-2">{e.trade}</span>
+                        <span className="text-xs font-semibold text-gray-800 dark:text-slate-200">{e.employee_name}</span>
+                        <span className="text-[10px] text-gray-500 dark:text-slate-500 ml-2">{e.trade}</span>
                       </div>
                       <div className="text-right">
                         <span className={`text-sm font-bold ${e.total_hours >= 40 ? 'text-red-400' : 'text-amber-400'}`}>
@@ -215,9 +215,9 @@ function JobCostSnapshot() {
                 <p className="text-xs text-amber-500">No approved/unexported entries this week.</p>
               ) : (
                 <div>
-                  <p className="text-sm text-slate-200">
-                    <span className="font-bold text-brand-400 text-xl">{snapshot.totals.ready_for_export_hours}h</span>
-                    <span className="text-slate-400 ml-2 text-xs">across {snapshot.totals.ready_for_export_count} entries</span>
+                  <p className="text-sm text-gray-800 dark:text-slate-200">
+                    <span className="font-bold text-brand-600 dark:text-brand-400 text-xl">{snapshot.totals.ready_for_export_hours}h</span>
+                    <span className="text-gray-500 dark:text-slate-400 ml-2 text-xs">across {snapshot.totals.ready_for_export_count} entries</span>
                   </p>
                   <p className="text-[10px] text-slate-600 mt-1">Approved, not yet exported — ready to download CSV</p>
                 </div>
@@ -236,8 +236,8 @@ function JobCostSnapshot() {
                     return (
                       <div key={c.cost_code}>
                         <div className="flex items-center justify-between mb-0.5">
-                          <span className="font-mono text-[11px] text-brand-400">{c.cost_code}</span>
-                          <span className="text-xs font-bold text-slate-200">{c.total_hours}h</span>
+                          <span className="font-mono text-[11px] text-brand-600 dark:text-brand-400">{c.cost_code}</span>
+                          <span className="text-xs font-bold text-gray-800 dark:text-slate-200">{c.total_hours}h</span>
                         </div>
                         <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
                           <div className="h-full rounded-full" style={{ width: `${pct}%`, background: JOB_COLORS[i % JOB_COLORS.length] }} />
@@ -254,7 +254,7 @@ function JobCostSnapshot() {
           {/* Hours by job table */}
           {snapshot.hours_by_job.length > 0 && (
             <div className="card">
-              <h3 className="font-semibold text-slate-200 text-sm mb-3">Hours by Job This Week</h3>
+              <h3 className="font-semibold text-gray-800 dark:text-slate-200 text-sm mb-3">Hours by Job This Week</h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
                   <thead>
@@ -277,9 +277,9 @@ function JobCostSnapshot() {
                         <tr key={j.job_id} className="table-row">
                           <td className="td">
                             <span className="font-mono text-brand-400">{j.job_number}</span>
-                            <span className="text-slate-400 ml-2 truncate max-w-[140px] inline-block align-bottom">{j.job_name}</span>
+                            <span className="text-gray-600 dark:text-slate-400 ml-2 truncate max-w-[140px] inline-block align-bottom">{j.job_name}</span>
                           </td>
-                          <td className="td text-right font-bold text-slate-200">{j.total_hours}h</td>
+                          <td className="td text-right font-bold text-gray-900 dark:text-slate-200">{j.total_hours}h</td>
                           <td className="td text-right text-emerald-400">{j.approved_hours || 0}h</td>
                           <td className="td text-right text-amber-400">{j.submitted_hours || 0}h</td>
                           <td className="td text-right text-purple-400">{j.exported_hours || 0}h</td>
@@ -346,7 +346,7 @@ export default function ReportsPage() {
   }
 
   const byJob = Object.values(jobCosts.reduce((acc, row) => {
-    if (!acc[row.job_id]) acc[row.job_id] = { name: row.job_number, hours: 0 }
+    if (!acc[row.job_id]) acc[row.job_id] = { name: row.job_name || row.job_number, hours: 0 }
     acc[row.job_id].hours += row.total_hours
     return acc
   }, {}))
@@ -376,14 +376,14 @@ export default function ReportsPage() {
       {/* ── Job Cost Snapshot (Phase 2.2) ── */}
       <JobCostSnapshot />
 
-      <div className="border-t border-slate-800 mb-6" />
+      <div className="border-t border-gray-200 dark:border-slate-800 mb-6" />
 
       {/* ── All-time reports ── */}
-      <h2 className="font-semibold text-slate-200 mb-4">All-Time Approved Hours</h2>
+      <h2 className="font-semibold text-gray-800 dark:text-slate-200 mb-4">All-Time Approved Hours</h2>
 
       {/* Job filter */}
       <div className="flex gap-3 mb-5 items-center">
-        <label className="text-sm text-slate-400 shrink-0">Filter by job:</label>
+        <label className="text-sm text-gray-600 dark:text-slate-400 shrink-0">Filter by job:</label>
         <select className="input max-w-xs" value={selectedJob} onChange={e => handleJobFilter(e.target.value)}>
           <option value="">All Jobs</option>
           {jobs.map(j => <option key={j.id} value={j.id}>{j.job_number} — {j.job_name}</option>)}
@@ -402,7 +402,7 @@ export default function ReportsPage() {
 
           {byJob.length > 0 && (
             <div className="card">
-              <h2 className="font-semibold text-slate-200 mb-4">Approved Hours by Job (All Time)</h2>
+              <h2 className="font-semibold text-gray-800 dark:text-slate-200 mb-4">Approved Hours by Job (All Time)</h2>
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={byJob} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
                   <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#94a3b8' }} />
@@ -419,8 +419,8 @@ export default function ReportsPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             {byEmployee.length > 0 && (
               <div className="card">
-                <h2 className="font-semibold text-slate-200 mb-4 flex items-center gap-2">
-                  <Users className="w-4 h-4 text-brand-400" /> Hours by Employee
+                <h2 className="font-semibold text-gray-800 dark:text-slate-200 mb-4 flex items-center gap-2">
+                  <Users className="w-4 h-4 text-brand-500 dark:text-brand-400" /> Hours by Employee
                 </h2>
                 <div className="space-y-2">
                   {byEmployee.slice(0, 8).map(emp => (
@@ -430,10 +430,10 @@ export default function ReportsPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between mb-0.5">
-                          <span className="text-xs text-slate-300 truncate">{emp.employee_name}</span>
-                          <span className="text-xs font-semibold text-slate-200 ml-2 shrink-0">{emp.total_hours}h</span>
+                          <span className="text-xs text-gray-700 dark:text-slate-300 truncate">{emp.employee_name}</span>
+                          <span className="text-xs font-semibold text-gray-800 dark:text-slate-200 ml-2 shrink-0">{emp.total_hours}h</span>
                         </div>
-                        <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                        <div className="h-1.5 bg-gray-200 dark:bg-slate-800 rounded-full overflow-hidden">
                           <div className="h-full rounded-full bg-brand-500"
                             style={{ width: `${Math.max(4, (emp.total_hours / (byEmployee[0]?.total_hours || 1)) * 100)}%` }} />
                         </div>
@@ -446,8 +446,8 @@ export default function ReportsPage() {
 
             {entryPieData.length > 0 && (
               <div className="card">
-                <h2 className="font-semibold text-slate-200 mb-4 flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-brand-400" /> Entry Status Breakdown
+                <h2 className="font-semibold text-gray-800 dark:text-slate-200 mb-4 flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-brand-500 dark:text-brand-400" /> Entry Status Breakdown
                 </h2>
                 <ResponsiveContainer width="100%" height={160}>
                   <PieChart>
@@ -464,15 +464,15 @@ export default function ReportsPage() {
 
           {matPieData.length > 0 && (
             <div className="card">
-              <h2 className="font-semibold text-slate-200 mb-4 flex items-center gap-2">
-                <Package className="w-4 h-4 text-brand-400" /> Material Requests by Status
+              <h2 className="font-semibold text-gray-800 dark:text-slate-200 mb-4 flex items-center gap-2">
+                <Package className="w-4 h-4 text-brand-500 dark:text-brand-400" /> Material Requests by Status
               </h2>
               <div className="flex items-center gap-6 flex-wrap mb-4">
                 {matPieData.map(d => (
                   <div key={d.name} className="flex items-center gap-2">
                     <span className="w-3 h-3 rounded-full shrink-0" style={{ background: d.color }} />
-                    <span className="text-xs text-slate-400 capitalize">{d.name}</span>
-                    <span className="text-xs font-bold text-slate-200">{d.value}</span>
+                    <span className="text-xs text-gray-600 dark:text-slate-400 capitalize">{d.name}</span>
+                    <span className="text-xs font-bold text-gray-800 dark:text-slate-200">{d.value}</span>
                   </div>
                 ))}
               </div>
@@ -489,7 +489,7 @@ export default function ReportsPage() {
 
           {byCostCode.length > 0 && (
             <div className="card">
-              <h2 className="font-semibold text-slate-200 mb-4">Hours by Cost Code (All Time)</h2>
+              <h2 className="font-semibold text-gray-800 dark:text-slate-200 mb-4">Hours by Cost Code (All Time)</h2>
               <div className="space-y-2">
                 {byCostCode.map((row, i) => (
                   <div key={row.name} className="flex items-center gap-4">
@@ -499,10 +499,10 @@ export default function ReportsPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-0.5">
-                        <span className="text-xs text-slate-400 truncate">{row.desc}</span>
-                        <span className="text-xs font-semibold text-slate-200 ml-2 shrink-0">{row.hours.toFixed(1)}h</span>
+                        <span className="text-xs text-gray-600 dark:text-slate-400 truncate">{row.desc}</span>
+                        <span className="text-xs font-semibold text-gray-800 dark:text-slate-200 ml-2 shrink-0">{row.hours.toFixed(1)}h</span>
                       </div>
-                      <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                      <div className="h-1.5 bg-gray-200 dark:bg-slate-800 rounded-full overflow-hidden">
                         <div className="h-full rounded-full"
                           style={{ width: `${Math.max(2, (row.hours / (byCostCode[0]?.hours || 1)) * 100)}%`, background: JOB_COLORS[i % JOB_COLORS.length] }} />
                       </div>

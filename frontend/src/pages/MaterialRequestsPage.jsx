@@ -204,7 +204,7 @@ export default function MaterialRequestsPage() {
             <button
               key={s}
               onClick={() => setFilter(s)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition-colors ${filter === s ? 'bg-brand-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-slate-200'}`}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition-colors ${filter === s ? 'bg-brand-600 text-white' : 'bg-gray-200 dark:bg-slate-800 text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-200'}`}
             >
               {s} {count > 0 && <span className="ml-1 opacity-70">({count})</span>}
             </button>
@@ -222,22 +222,22 @@ export default function MaterialRequestsPage() {
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="font-semibold text-slate-100">{mr.material_name}</span>
+                      <span className="font-semibold text-gray-900 dark:text-slate-100">{mr.material_name}</span>
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium capitalize ${PRIORITY_COLORS[mr.priority]}`}>{mr.priority}</span>
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium capitalize ${STATUS_COLORS[mr.status]}`}>{mr.status}</span>
                     </div>
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-400">
-                      <span><span className="text-slate-500">Qty:</span> <span className="text-slate-300 font-medium">{mr.quantity} {mr.unit}</span></span>
-                      <span><span className="text-slate-500">Job:</span> <span className="text-slate-300">{mr.job_number} — {mr.job_name}</span></span>
-                      <span><span className="text-slate-500">By:</span> <span className="text-slate-300">{mr.requested_by}</span></span>
-                      {mr.needed_by_date && <span><span className="text-slate-500">Needed:</span> <span className="text-slate-300">{mr.needed_by_date}</span></span>}
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600 dark:text-slate-400">
+                      <span><span className="text-gray-500 dark:text-slate-500">Qty:</span> <span className="text-gray-800 dark:text-slate-300 font-medium">{mr.quantity} {mr.unit}</span></span>
+                      <span><span className="text-gray-500 dark:text-slate-500">Job:</span> <span className="text-gray-800 dark:text-slate-300">{mr.job_number} — {mr.job_name}</span></span>
+                      <span><span className="text-gray-500 dark:text-slate-500">By:</span> <span className="text-gray-800 dark:text-slate-300">{mr.requested_by}</span></span>
+                      {mr.needed_by_date && <span><span className="text-gray-500 dark:text-slate-500">Needed:</span> <span className="text-gray-800 dark:text-slate-300">{mr.needed_by_date}</span></span>}
                     </div>
-                    {mr.notes && <p className="text-xs text-slate-500 mt-1.5 italic">{mr.notes}</p>}
+                    {mr.notes && <p className="text-xs text-gray-500 dark:text-slate-500 mt-1.5 italic">{mr.notes}</p>}
                     {mr.status === 'denied' && mr.denial_reason && (
                       <p className="text-xs text-red-400 mt-1.5">Denied: {mr.denial_reason}</p>
                     )}
                     {mr.approved_by && (
-                      <p className="text-xs text-slate-500 mt-1">Actioned by {mr.approved_by}</p>
+                      <p className="text-xs text-gray-500 dark:text-slate-500 mt-1">Actioned by {mr.approved_by}</p>
                     )}
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
@@ -247,12 +247,12 @@ export default function MaterialRequestsPage() {
                       </button>
                     )}
                     {(mr.status === 'requested' && (user?.role === 'worker' || canManage)) && (
-                      <button onClick={() => setEditMR(mr)} className="text-slate-500 hover:text-slate-300 p-1">
+                      <button onClick={() => setEditMR(mr)} className="text-gray-400 dark:text-slate-500 hover:text-gray-700 dark:hover:text-slate-300 p-1">
                         <Edit2 className="w-3.5 h-3.5" />
                       </button>
                     )}
                     {mr.status === 'requested' && (
-                      <button onClick={() => handleDelete(mr.id)} className="text-slate-600 hover:text-red-400 p-1">
+                      <button onClick={() => handleDelete(mr.id)} className="text-gray-400 dark:text-slate-600 hover:text-red-500 dark:hover:text-red-400 p-1">
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     )}

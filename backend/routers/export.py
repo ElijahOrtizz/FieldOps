@@ -157,7 +157,7 @@ def export_sage_csv(
         writer.writerow(row)
 
     now_str = datetime.now().strftime("%Y-%m-%d")
-    filename = f"fieldops_sage_export_{now_str}.csv"
+    filename = f"stryda_sage_export_{now_str}.csv"
 
     if mark_exported:
         batch = models.ExportBatch(

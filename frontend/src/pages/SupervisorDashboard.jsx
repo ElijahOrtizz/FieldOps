@@ -52,21 +52,21 @@ export default function SupervisorDashboard() {
         {/* Pending queue preview */}
         <div className="card">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-slate-200">Pending Approvals</h2>
-            <Link to="/supervisor/approvals" className="text-xs text-brand-400 hover:text-brand-300">View all →</Link>
+            <h2 className="font-semibold text-gray-800 dark:text-slate-200">Pending Approvals</h2>
+            <Link to="/supervisor/approvals" className="text-xs text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300">View all →</Link>
           </div>
           {queue.length === 0 ? (
-            <p className="text-slate-500 text-sm py-4 text-center">All caught up! No pending approvals.</p>
+            <p className="text-gray-500 dark:text-slate-500 text-sm py-4 text-center">All caught up! No pending approvals.</p>
           ) : (
             <div className="space-y-2">
               {queue.map(entry => (
-                <div key={entry.id} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+                <div key={entry.id} className="flex items-center justify-between p-3 bg-gray-100 dark:bg-slate-800/50 rounded-lg">
                   <div>
-                    <p className="text-sm font-medium text-slate-200">{entry.employee_name}</p>
-                    <p className="text-xs text-slate-500">{entry.date} · {entry.job_number} · {entry.cost_code}</p>
+                    <p className="text-sm font-medium text-gray-800 dark:text-slate-200">{entry.employee_name}</p>
+                    <p className="text-xs text-gray-500 dark:text-slate-500">{entry.date} · {entry.job_number} · {entry.cost_code}</p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="font-semibold text-slate-200">{entry.total_hours}h</span>
+                    <span className="font-semibold text-gray-800 dark:text-slate-200">{entry.total_hours}h</span>
                     <StatusBadge status={entry.status} />
                   </div>
                 </div>
@@ -77,29 +77,29 @@ export default function SupervisorDashboard() {
 
         {/* Weekly crew summary */}
         <div className="card">
-          <h2 className="font-semibold text-slate-200 mb-4">Weekly Crew Summary</h2>
+          <h2 className="font-semibold text-gray-800 dark:text-slate-200 mb-4">Weekly Crew Summary</h2>
           {crewReport.length === 0 ? (
-            <p className="text-slate-500 text-sm py-4 text-center">No hours logged this week.</p>
+            <p className="text-gray-500 dark:text-slate-500 text-sm py-4 text-center">No hours logged this week.</p>
           ) : (
             <div className="space-y-3">
               {crewReport.map(worker => (
                 <div key={worker.employee_id} className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-brand-700/30 flex items-center justify-center text-xs font-bold text-brand-400">
+                  <div className="w-8 h-8 rounded-full bg-brand-700/30 flex items-center justify-center text-xs font-bold text-brand-600 dark:text-brand-400">
                     {worker.employee_name?.charAt(0)}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-0.5">
-                      <p className="text-sm font-medium text-slate-200 truncate">{worker.employee_name}</p>
-                      <span className="text-sm font-semibold text-slate-200 ml-2">{worker.total_hours}h</span>
+                      <p className="text-sm font-medium text-gray-800 dark:text-slate-200 truncate">{worker.employee_name}</p>
+                      <span className="text-sm font-semibold text-gray-800 dark:text-slate-200 ml-2">{worker.total_hours}h</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="flex-1 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                      <div className="flex-1 h-1.5 bg-gray-200 dark:bg-slate-800 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-brand-600 rounded-full"
                           style={{ width: `${Math.min(100, (worker.total_hours / 45) * 100)}%` }}
                         />
                       </div>
-                      <span className="text-xs text-slate-500">{worker.pending_hours}h pending</span>
+                      <span className="text-xs text-gray-500 dark:text-slate-500">{worker.pending_hours}h pending</span>
                     </div>
                   </div>
                 </div>

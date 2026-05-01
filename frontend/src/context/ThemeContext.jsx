@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 const ThemeContext = createContext(null)
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(() => localStorage.getItem('fieldops_theme') || 'dark')
+  const [theme, setTheme] = useState(() => localStorage.getItem('stryda_theme') || 'dark')
 
   useEffect(() => {
     const root = document.documentElement
@@ -12,7 +12,7 @@ export function ThemeProvider({ children }) {
     } else {
       root.classList.add('dark')
     }
-    localStorage.setItem('fieldops_theme', theme)
+    localStorage.setItem('stryda_theme', theme)
   }, [theme])
 
   const toggle = () => setTheme(t => t === 'dark' ? 'light' : 'dark')

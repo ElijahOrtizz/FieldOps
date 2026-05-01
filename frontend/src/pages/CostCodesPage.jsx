@@ -53,7 +53,7 @@ function CostCodeForm({ cc, onSave, onClose }) {
         <input className="input" value={form.description} onChange={e => setForm({...form, description: e.target.value})} required />
       </div>
       <div className="form-group">
-        <label className="label">Sage Cost Code <span className="text-slate-600 normal-case font-normal">(for future Sage sync)</span></label>
+        <label className="label">Sage Cost Code <span className="text-gray-400 dark:text-slate-600 normal-case font-normal">(for future Sage sync)</span></label>
         <input className="input font-mono" placeholder="SAGE-CC-XX-000" value={form.sage_cost_code} onChange={e => setForm({...form, sage_cost_code: e.target.value})} />
       </div>
       <div className="flex gap-3 justify-end pt-2">
@@ -105,7 +105,7 @@ export default function CostCodesPage() {
         <div className="space-y-5">
           {categories.filter(cat => grouped[cat].length > 0).map(cat => (
             <div key={cat} className="card">
-              <h3 className="font-semibold text-slate-300 mb-3 text-sm uppercase tracking-wider">{cat}</h3>
+              <h3 className="font-semibold text-gray-600 dark:text-slate-300 mb-3 text-sm uppercase tracking-wider">{cat}</h3>
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-slate-800">
@@ -121,19 +121,19 @@ export default function CostCodesPage() {
                     <tr key={cc.id} className={`table-row ${!cc.is_active ? 'opacity-40' : ''}`}>
                       <td className="td font-mono font-semibold text-brand-400">{cc.code}</td>
                       <td className="td">{cc.description}</td>
-                      <td className="td font-mono text-xs text-slate-500">{cc.sage_cost_code || '—'}</td>
+                      <td className="td font-mono text-xs text-gray-500 dark:text-slate-500">{cc.sage_cost_code || '—'}</td>
                       <td className="td">
-                        <span className={`text-xs font-medium ${cc.is_active ? 'text-emerald-400' : 'text-slate-600'}`}>
+                        <span className={`text-xs font-medium ${cc.is_active ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-400 dark:text-slate-600'}`}>
                           {cc.is_active ? 'Active' : 'Inactive'}
                         </span>
                       </td>
                       <td className="td">
                         <div className="flex gap-1">
-                          <button onClick={() => setModal(cc)} className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-500 hover:text-slate-300">
+                          <button onClick={() => setModal(cc)} className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-400 dark:text-slate-500 hover:text-gray-700 dark:hover:text-slate-300">
                             <Edit2 className="w-4 h-4" />
                           </button>
                           {cc.is_active && (
-                            <button onClick={() => handleDeactivate(cc.id)} className="p-1.5 rounded-lg hover:bg-amber-500/10 text-slate-500 hover:text-amber-400">
+                            <button onClick={() => handleDeactivate(cc.id)} className="p-1.5 rounded-lg hover:bg-amber-500/10 text-gray-400 dark:text-slate-500 hover:text-amber-600 dark:hover:text-amber-400">
                               <ToggleLeft className="w-4 h-4" />
                             </button>
                           )}

@@ -77,7 +77,7 @@ export default function ExportPage() {
       const a = document.createElement('a')
       const now = format(new Date(), 'yyyy-MM-dd')
       a.href = url
-      a.download = `fieldops_sage_export_${now}.csv`
+      a.download = `stryda_sage_export_${now}.csv`
       a.click()
       URL.revokeObjectURL(url)
       setExported(true)
@@ -98,7 +98,7 @@ export default function ExportPage() {
 
       {/* ── Filters ── */}
       <div className="card mb-5">
-        <h2 className="font-semibold text-slate-200 mb-4">Export Filters</h2>
+        <h2 className="font-semibold text-gray-800 dark:text-slate-200 mb-4">Export Filters</h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
           <div className="form-group">
             <label className="label">Date From</label>
@@ -117,13 +117,13 @@ export default function ExportPage() {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-4 items-center border-t border-slate-800 pt-4">
-          <label className="flex items-center gap-2 cursor-pointer text-sm text-slate-300">
+        <div className="flex flex-wrap gap-4 items-center border-t border-gray-200 dark:border-slate-800 pt-4">
+          <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-700 dark:text-slate-300">
             <input type="checkbox" className="w-4 h-4 rounded" checked={markExported}
               onChange={e => setMarkExported(e.target.checked)} />
             Mark entries as exported after download
           </label>
-          <label className="flex items-center gap-2 cursor-pointer text-sm text-slate-400">
+          <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-600 dark:text-slate-400">
             <input type="checkbox" className="w-4 h-4 rounded" checked={includeExported}
               onChange={e => setIncludeExported(e.target.checked)} />
             Include already-exported entries
@@ -140,14 +140,14 @@ export default function ExportPage() {
       {/* ── Export Preview ── */}
       <div className="card mb-5">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold text-slate-200 flex items-center gap-2">
+          <h2 className="font-semibold text-gray-800 dark:text-slate-200 flex items-center gap-2">
             <Eye className="w-4 h-4 text-brand-400" />Export Preview
           </h2>
           {preview && (
             <div className="flex items-center gap-4">
-              <span className="text-sm text-slate-400">
-                <span className="font-bold text-slate-200">{preview.record_count}</span> entries ·{' '}
-                <span className="font-bold text-slate-200">{preview.total_hours}h</span> total
+              <span className="text-sm text-gray-600 dark:text-slate-400">
+                <span className="font-bold text-gray-900 dark:text-slate-200">{preview.record_count}</span> entries ·{' '}
+                <span className="font-bold text-gray-900 dark:text-slate-200">{preview.total_hours}h</span> total
               </span>
             </div>
           )}
@@ -158,8 +158,8 @@ export default function ExportPage() {
         ) : !preview || preview.record_count === 0 ? (
           <div className="text-center py-8">
             <AlertTriangle className="w-8 h-8 text-amber-500/50 mx-auto mb-2" />
-            <p className="text-slate-400 font-medium">No entries to export</p>
-            <p className="text-slate-600 text-sm mt-1">
+            <p className="text-gray-600 dark:text-slate-400 font-medium">No entries to export</p>
+            <p className="text-gray-400 dark:text-slate-600 text-sm mt-1">
               {includeExported
                 ? 'No approved or exported entries match the filters.'
                 : 'No approved (unexported) entries found. Check filters or enable "include already exported".'}
@@ -182,15 +182,15 @@ export default function ExportPage() {
               <tbody>
                 {preview.entries.map(e => (
                   <tr key={e.id} className="table-row">
-                    <td className="td text-slate-300">{e.employee_name}</td>
-                    <td className="td text-slate-400 font-mono">{fmtDate(e.date)}</td>
+                    <td className="td">{e.employee_name}</td>
+                    <td className="td font-mono">{fmtDate(e.date)}</td>
                     <td className="td">
                       <span className="font-mono text-brand-400">{e.job_number}</span>
-                      <span className="text-slate-500 ml-1.5 truncate max-w-[100px] inline-block align-bottom">{e.job_name}</span>
+                      <span className="text-gray-500 dark:text-slate-500 ml-1.5 truncate max-w-[100px] inline-block align-bottom">{e.job_name}</span>
                     </td>
-                    <td className="td font-mono text-slate-400">{e.cost_code}</td>
-                    <td className="td text-right font-bold text-slate-200">{e.hours}h</td>
-                    <td className="td text-slate-400">{e.pay_type}</td>
+                    <td className="td font-mono">{e.cost_code}</td>
+                    <td className="td text-right font-bold">{e.hours}h</td>
+                    <td className="td">{e.pay_type}</td>
                     <td className="td">
                       <span className={`font-semibold capitalize ${STATUS_CLS[e.status] || 'text-slate-400'}`}>{e.status}</span>
                     </td>
@@ -199,8 +199,8 @@ export default function ExportPage() {
               </tbody>
               <tfoot>
                 <tr className="border-t border-slate-700">
-                  <td colSpan={4} className="td text-slate-400 font-medium">Total</td>
-                  <td className="td text-right font-bold text-slate-100">{preview.total_hours}h</td>
+                  <td colSpan={4} className="td font-medium">Total</td>
+                  <td className="td text-right font-bold text-gray-900 dark:text-slate-100">{preview.total_hours}h</td>
                   <td colSpan={2} />
                 </tr>
               </tfoot>
@@ -233,7 +233,7 @@ export default function ExportPage() {
           {exporting ? 'Exporting…' : `Download Sage CSV${preview ? ` (${preview.record_count} entries)` : ''}`}
         </button>
         {markExported && preview && preview.record_count > 0 && (
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-gray-500 dark:text-slate-500">
             Will mark {preview.record_count} entries as exported.
           </p>
         )}
@@ -241,8 +241,8 @@ export default function ExportPage() {
 
       {/* ── Sage Format Note ── */}
       <div className="mt-6 card !py-3 opacity-60">
-        <p className="text-xs text-slate-500 mb-2 font-semibold uppercase tracking-wider">CSV Columns</p>
-        <p className="text-xs text-slate-600 font-mono">
+        <p className="text-xs text-gray-500 dark:text-slate-500 mb-2 font-semibold uppercase tracking-wider">CSV Columns</p>
+        <p className="text-xs text-gray-400 dark:text-slate-600 font-mono">
           Employee_ID · Employee_Name · Job_Number · Job_Name · Cost_Code · Cost_Code_Desc ·
           Date · Day_Of_Week · Start_Time · End_Time · Hours · Pay_Type · Notes · Approved_By · Approval_Date · Export_Date
         </p>

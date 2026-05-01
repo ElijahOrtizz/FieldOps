@@ -1,8 +1,8 @@
-# FieldOps
+# Stryda
 
-**FieldOps** is a full-stack construction operations platform for small-to-mid contractors. It connects crew scheduling, worker time tracking, supervisor daily review, weekly payroll approval, job costing, and Sage-ready payroll workflows into one clean system.
+**Stryda** is a full-stack construction operations platform for small-to-mid contractors. It connects crew scheduling, worker time tracking, supervisor daily review, weekly payroll approval, job costing, and Sage-ready payroll workflows into one clean system.
 
-FieldOps is designed to help contractors move from field work to clean payroll and job-cost visibility without relying on paper timecards, text messages, spreadsheets, or disconnected tools.
+Stryda is designed to help contractors move from field work to clean payroll and job-cost visibility without relying on paper timecards, text messages, spreadsheets, or disconnected tools.
 
 ---
 
@@ -10,7 +10,7 @@ FieldOps is designed to help contractors move from field work to clean payroll a
 
 <p align="center">
   <a href="https://youtu.be/mNq2MaEQ_AQ" target="_blank">
-    <img src="SS.png" width="600" alt="FieldOps Demo"/>
+    <img src="SS.png" width="600" alt="Stryda Demo"/>
   </a>
 </p>
 
@@ -22,7 +22,7 @@ FieldOps is designed to help contractors move from field work to clean payroll a
 
 ---
 
-## Why FieldOps
+## Why Stryda
 
 Many small-to-mid construction companies use Sage for payroll and accounting, but still collect field time manually. That creates problems every week:
 
@@ -33,7 +33,7 @@ Many small-to-mid construction companies use Sage for payroll and accounting, bu
 - Job-cost reports are only useful after the damage is done
 - There is no clean audit trail for approvals, corrections, or payroll changes
 
-FieldOps is designed to close that gap.
+Stryda is designed to close that gap.
 
 ---
 
@@ -61,7 +61,7 @@ Owner sees labor cost and job-cost risk
 
 ## Target Users
 
-FieldOps is built for construction companies with roughly **20–250 field workers**, especially:
+Stryda is built for construction companies with roughly **20–250 field workers**, especially:
 
 - Electrical subcontractors
 - Plumbing contractors
@@ -162,7 +162,7 @@ FieldOps is built for construction companies with roughly **20–250 field worke
 ## Project Structure
 
 ```text
-fieldops/
+stryda/
 ├── backend/
 │   ├── main.py
 │   ├── models.py
@@ -194,7 +194,7 @@ fieldops/
 │
 ├── docs/
 │   └── demo/
-│       └── fieldops-demo.mov
+│       └── stryda-demo.mov
 │
 └── README.md
 ```
@@ -258,9 +258,9 @@ These are local demo credentials only.
 
 | Role | Email | Password |
 |---|---|---|
-| Admin | admin@fieldops.com | admin123 |
-| Supervisor | supervisor@fieldops.com | supervisor123 |
-| Worker | worker1@fieldops.com | work123 |
+| Admin | admin@stryda.com | admin123 |
+| Supervisor | supervisor@stryda.com | supervisor123 |
+| Worker | worker1@stryda.com | work123 |
 
 Do not use these credentials in production.
 
@@ -283,7 +283,7 @@ Do not use these credentials in production.
 
 ## Product Strategy
 
-FieldOps is not trying to replace large enterprise construction platforms. It is focused on a narrower and more practical niche:
+Stryda is not trying to replace large enterprise construction platforms. It is focused on a narrower and more practical niche:
 
 > Field-to-payroll operations for Sage-based contractors.
 
@@ -296,7 +296,7 @@ The competitive advantage is the connection between:
 - Sage-ready sync
 - Job-cost visibility
 
-This makes FieldOps useful to foremen, payroll admins, and owners without requiring a full enterprise project management rollout.
+This makes Stryda useful to foremen, payroll admins, and owners without requiring a full enterprise project management rollout.
 
 ---
 
@@ -345,7 +345,7 @@ This makes FieldOps useful to foremen, payroll admins, and owners without requir
 
 ## Current Status
 
-FieldOps is an active full-stack MVP. The current version demonstrates the main field-to-payroll workflow locally, including scheduling, time tracking, supervisor review, payroll approval, job costing, and Sage-ready export/sync structure.
+Stryda is an active full-stack MVP. The current version demonstrates the main field-to-payroll workflow locally, including scheduling, time tracking, supervisor review, payroll approval, job costing, and Sage-ready export/sync structure.
 
 ---
 

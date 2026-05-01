@@ -1,11 +1,11 @@
 """
 Sage Integration Layer — Phase 2.2
 
-This module provides a clean separation between FieldOps and Sage 100/300.
+This module provides a clean separation between Stryda and Sage 100/300.
 Currently simulates sync operations. To connect a real Sage API:
 1. Add Sage credentials to .env (SAGE_CLIENT_ID, SAGE_CLIENT_SECRET, SAGE_COMPANY_ID)
 2. Replace the `_call_sage_api()` stub below with real HTTP calls
-3. Map FieldOps field names to Sage field names using the FIELD_MAP constants
+3. Map Stryda field names to Sage field names using the FIELD_MAP constants
 
 The simulated sync marks entries as synced/failed without touching Sage.
 All actions are audit-logged regardless of real/simulated mode.
