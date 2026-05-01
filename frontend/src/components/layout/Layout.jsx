@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { useTheme } from '../../context/ThemeContext'
 import {
   LayoutDashboard, Clock, CheckSquare, Users, CalendarDays, CalendarRange, ClipboardCheck,
   Briefcase, Tag, FileText, Download, BarChart3, Menu, X,
-  LogOut, HardHat, Package, History, Settings, Activity
+  LogOut, HardHat, Package, History, Settings, Activity, Sun, Moon
 } from 'lucide-react'
 
 const workerNav = [
@@ -68,6 +69,7 @@ function NavSection({ title, links }) {
 
 export default function Layout() {
   const { user, logout } = useAuth()
+  const { theme, toggle: toggleTheme } = useTheme()
   const navigate = useNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -118,6 +120,13 @@ export default function Layout() {
             <p className="text-sm font-medium text-slate-200 truncate">{user?.name}</p>
             <p className="text-xs text-slate-500 capitalize">{user?.role}</p>
           </div>
+          <button
+            onClick={toggleTheme}
+            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            className="p-1.5 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-slate-700 transition-colors shrink-0"
+          >
+            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
         </div>
         <button onClick={handleLogout} className="sidebar-link w-full text-red-400 hover:text-red-300 hover:bg-red-500/10">
           <LogOut className="w-4 h-4" />

@@ -51,6 +51,8 @@ function JobForm({ job, onSave, onClose }) {
       if (job) await jobsApi.update(job.id, data)
       else await jobsApi.create(data)
       onSave()
+    } catch (e) {
+      alert(e.response?.data?.detail || 'Error saving job')
     } finally { setLoading(false) }
   }
 

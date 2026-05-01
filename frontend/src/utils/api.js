@@ -23,38 +23,40 @@ api.interceptors.response.use(
   }
 )
 
+// Auth routes: defined as @router.post("/login"), @router.get("/me") — no trailing slash
 export const authApi = {
   login: (email, password) => api.post('/auth/login', { email, password }),
   me: () => api.get('/auth/me'),
 }
 
+// Collection root routes: defined as @router.get("/") — keep trailing slash
 export const employeesApi = {
-  list: (activeOnly = true) => api.get(`/employees?active_only=${activeOnly}`),
+  list: (activeOnly = true) => api.get(`/employees/?active_only=${activeOnly}`),
   get: (id) => api.get(`/employees/${id}`),
-  create: (data) => api.post('/employees', data),
+  create: (data) => api.post('/employees/', data),
   update: (id, data) => api.put(`/employees/${id}`, data),
   delete: (id) => api.delete(`/employees/${id}`),
 }
 
 export const jobsApi = {
-  list: (activeOnly = false) => api.get(`/jobs?active_only=${activeOnly}`),
+  list: (activeOnly = false) => api.get(`/jobs/?active_only=${activeOnly}`),
   get: (id) => api.get(`/jobs/${id}`),
-  create: (data) => api.post('/jobs', data),
+  create: (data) => api.post('/jobs/', data),
   update: (id, data) => api.put(`/jobs/${id}`, data),
   delete: (id) => api.delete(`/jobs/${id}`),
 }
 
 export const costCodesApi = {
-  list: () => api.get('/cost-codes'),
-  create: (data) => api.post('/cost-codes', data),
+  list: () => api.get('/cost-codes/'),
+  create: (data) => api.post('/cost-codes/', data),
   update: (id, data) => api.put(`/cost-codes/${id}`, data),
   delete: (id) => api.delete(`/cost-codes/${id}`),
 }
 
 export const timeEntriesApi = {
-  list: (params = {}) => api.get('/time-entries', { params }),
+  list: (params = {}) => api.get('/time-entries/', { params }),
   get: (id) => api.get(`/time-entries/${id}`),
-  create: (data) => api.post('/time-entries', data),
+  create: (data) => api.post('/time-entries/', data),
   update: (id, data) => api.put(`/time-entries/${id}`, data),
   delete: (id) => api.delete(`/time-entries/${id}`),
   getAudit: (id) => api.get(`/time-entries/${id}/audit`),
@@ -70,6 +72,7 @@ export const timeEntriesApi = {
   },
 }
 
+// Approvals: named sub-routes — no trailing slash
 export const approvalsApi = {
   queue: () => api.get('/approvals/queue'),
   process: (entryId, data) => api.post(`/approvals/${entryId}`, data),
@@ -79,6 +82,7 @@ export const approvalsApi = {
   bulkApproveIds: (data) => api.post('/approvals/bulk-approve-ids', data),
 }
 
+// Export: named sub-routes — no trailing slash
 export const exportApi = {
   sageCsv: (params = {}) => api.get('/export/sage-csv', {
     params,
@@ -89,6 +93,7 @@ export const exportApi = {
   preview: (params = {}) => api.get('/export/preview', { params }),
 }
 
+// Reports: named sub-routes — no trailing slash
 export const reportsApi = {
   dashboard: () => api.get('/reports/dashboard'),
   jobCost: (jobId) => api.get('/reports/job-cost', { params: jobId ? { job_id: jobId } : {} }),
@@ -99,44 +104,51 @@ export const reportsApi = {
   jobCostSnapshot: (weekStart) => api.get('/reports/job-cost-snapshot', { params: weekStart ? { week_start: weekStart } : {} }),
 }
 
+// Material requests: collection root — keep trailing slash
 export const materialRequestsApi = {
-  list: (params = {}) => api.get('/material-requests', { params }),
-  create: (data) => api.post('/material-requests', data),
+  list: (params = {}) => api.get('/material-requests/', { params }),
+  create: (data) => api.post('/material-requests/', data),
   update: (id, data) => api.put(`/material-requests/${id}`, data),
   delete: (id) => api.delete(`/material-requests/${id}`),
 }
 
+// Audit logs: collection root — keep trailing slash
 export const auditLogsApi = {
-  list: (params = {}) => api.get('/audit-logs', { params }),
+  list: (params = {}) => api.get('/audit-logs/', { params }),
 }
 
+// Settings: collection root — keep trailing slash
 export const settingsApi = {
-  get: () => api.get('/settings'),
-  update: (data) => api.put('/settings', data),
+  get: () => api.get('/settings/'),
+  update: (data) => api.put('/settings/', data),
 }
 
+// Users: collection root — keep trailing slash
 export const usersApi = {
-  list: () => api.get('/users'),
-  create: (data) => api.post('/users', data),
+  list: () => api.get('/users/'),
+  create: (data) => api.post('/users/', data),
   update: (id, data) => api.put(`/users/${id}`, data),
   delete: (id) => api.delete(`/users/${id}`),
 }
 
 export default api
 
+// Sage: named sub-routes — no trailing slash
 export const sageApi = {
   prepare: (data) => api.post('/sage/prepare', data),
   sync: (data) => api.post('/sage/sync', data),
   status: (weekStart) => api.get('/sage/status', { params: weekStart ? { week_start: weekStart } : {} }),
 }
 
+// Payroll locks: "/" root keeps slash; named sub-routes do not
 export const payrollLocksApi = {
-  list: () => api.get('/payroll-locks'),
+  list: () => api.get('/payroll-locks/'),
   check: (weekStart) => api.get('/payroll-locks/check', { params: { week_start: weekStart } }),
   lock: (data) => api.post('/payroll-locks/lock', data),
   unlock: (data) => api.post('/payroll-locks/unlock', data),
 }
 
+// Schedule: named sub-routes — no trailing slash
 export const scheduleApi = {
   weekly: (params = {}) => api.get('/schedule/weekly', { params }),
   assign: (data) => api.post('/schedule/assign', data),
@@ -147,6 +159,7 @@ export const scheduleApi = {
   today: () => api.get('/schedule/today'),
 }
 
+// Worker: named sub-routes — no trailing slash
 export const workerApi = {
   today: () => api.get('/worker/today'),
   clockIn: (data) => api.post('/worker/clock-in', data),
@@ -155,6 +168,7 @@ export const workerApi = {
   requestCorrection: (data) => api.post('/worker/request-correction', data),
 }
 
+// Supervisor/daily-review: named sub-routes — no trailing slash
 export const dailyReviewApi = {
   get: (params = {}) => api.get('/supervisor/daily-review', { params }),
   approveEntry: (id, data = {}) => api.post(`/supervisor/time-entries/${id}/approve`, data),

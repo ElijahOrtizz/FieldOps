@@ -30,6 +30,12 @@ export default function SettingsPage() {
   }
 
   if (loading) return <div className="flex justify-center py-16"><LoadingSpinner size="lg" /></div>
+  if (!form) return (
+    <div className="max-w-2xl">
+      <PageHeader title="Settings" subtitle="Configure FieldOps for your company" />
+      <div className="card text-center py-10 text-slate-500">Could not load settings. Check that the backend is running.</div>
+    </div>
+  )
 
   return (
     <div className="max-w-2xl">

@@ -162,12 +162,16 @@ def clock_out(
     total_hours = round(delta.total_seconds() / 3600, 2) if delta else 0
 
     # Create a submitted time entry
+    default_cc = db.query(models.CostCode).filter(models.CostCode.is_active == True).first()
+    if not default_cc:
+        raise HTTPException(status_code=400, detail="No active cost codes configured. Contact your administrator.")
+
     start_str = session.clock_in_time.strftime("%H:%M") if session.clock_in_time else None
     end_str = now.strftime("%H:%M")
     entry = models.TimeEntry(
         employee_id=emp.id,
         job_id=session.job_id,
-        cost_code_id=db.query(models.CostCode).filter(models.CostCode.is_active == True).first().id,
+        cost_code_id=default_cc.id,
         date=date.today(),
         start_time=start_str,
         end_time=end_str,
