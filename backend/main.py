@@ -41,6 +41,56 @@ def ensure_default_admin():
 
 ensure_default_admin()
 
+
+def ensure_ot_columns():
+    """
+    Idempotent startup migration: adds OT/DT columns to company_settings
+    if they don't already exist, then backfills defaults on existing rows.
+    Works on both SQLite and PostgreSQL.
+    """
+    from sqlalchemy import text
+    new_columns = [
+        ("daily_ot_threshold",  "REAL"),
+        ("daily_dt_threshold",  "REAL"),
+        ("weekly_ot_threshold", "REAL"),
+        ("weekly_dt_threshold", "REAL"),
+        ("seventh_day_rule",    "INTEGER"),
+        ("ot_multiplier",       "REAL"),
+        ("dt_multiplier",       "REAL"),
+    ]
+    with engine.connect() as conn:
+        for col_name, col_type in new_columns:
+            try:
+                conn.execute(text(
+                    f"ALTER TABLE company_settings ADD COLUMN {col_name} {col_type}"
+                ))
+                conn.commit()
+            except Exception:
+                # Column already exists — safe to ignore
+                conn.rollback()
+
+        # Backfill defaults on any existing rows that have NULLs
+        conn.execute(text(
+            "UPDATE company_settings "
+            "SET weekly_ot_threshold = 40.0 WHERE weekly_ot_threshold IS NULL"
+        ))
+        conn.execute(text(
+            "UPDATE company_settings "
+            "SET ot_multiplier = 1.5 WHERE ot_multiplier IS NULL"
+        ))
+        conn.execute(text(
+            "UPDATE company_settings "
+            "SET dt_multiplier = 2.0 WHERE dt_multiplier IS NULL"
+        ))
+        conn.execute(text(
+            "UPDATE company_settings "
+            "SET seventh_day_rule = 0 WHERE seventh_day_rule IS NULL"
+        ))
+        conn.commit()
+
+
+ensure_ot_columns()
+
 app = FastAPI(title="Stryda API", version="2.3.0")
 
 _cors_env = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:5173")

@@ -10,8 +10,6 @@ import {
 
 const workerNav = [
   { to: '/worker', label: 'Dashboard', icon: LayoutDashboard, exact: true },
-  { to: '/worker/new-entry', label: 'Log My Time', icon: Clock },
-  { to: '/worker/my-entries', label: 'My Entries', icon: FileText },
   { to: '/worker/material-requests', label: 'Material Requests', icon: Package },
   { to: '/crew-schedule', label: "Today's Schedule", icon: CalendarRange },
 ]
@@ -46,22 +44,34 @@ const adminNav = [
   { to: '/admin/settings', label: 'Settings', icon: Settings },
 ]
 
-function NavSection({ title, links }) {
+function NavSection({ title, links, onNavigate }) {
   return (
     <div className="mb-4">
       {title && <p className="text-[10px] font-bold text-gray-400 dark:text-slate-600 uppercase tracking-widest px-3 mb-2">{title}</p>}
       <nav className="space-y-0.5">
-        {links.map(({ to, label, icon: Icon, exact }) => (
-          <NavLink
-            key={to}
-            to={to}
-            end={exact}
-            className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-          >
-            <Icon className="w-4 h-4 shrink-0" />
-            {label}
-          </NavLink>
-        ))}
+        {links.map(({ to, label, icon: Icon, exact, comingSoon }) =>
+          comingSoon ? (
+            <div
+              key={to}
+              className="sidebar-link opacity-40 cursor-not-allowed select-none"
+            >
+              <Icon className="w-4 h-4 shrink-0" />
+              <span className="flex-1">{label}</span>
+              <span className="text-[9px] font-bold uppercase tracking-wider bg-gray-200 dark:bg-slate-700 text-gray-500 dark:text-slate-400 px-1.5 py-0.5 rounded">Soon</span>
+            </div>
+          ) : (
+            <NavLink
+              key={to}
+              to={to}
+              end={exact}
+              onClick={onNavigate}
+              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+            >
+              <Icon className="w-4 h-4 shrink-0" />
+              {label}
+            </NavLink>
+          )
+        )}
       </nav>
     </div>
   )
@@ -82,7 +92,7 @@ export default function Layout() {
     navigate('/login')
   }
 
-  const SidebarContent = () => (
+  const SidebarContent = ({ onNavigate }) => (
     <div className="flex flex-col h-full">
       {/* Logo */}
       <div className="px-4 pt-5 pb-6">
@@ -99,14 +109,14 @@ export default function Layout() {
 
       {/* Nav */}
       <div className="flex-1 px-2 overflow-y-auto">
-        <NavSection links={navLinks} />
+        <NavSection links={navLinks} onNavigate={onNavigate} />
 
         {/* Field entry sub-nav for supervisors/admins */}
         {user?.role !== 'worker' && (
           <NavSection title="Field Entry" links={[
             { to: '/worker/new-entry', label: 'Log My Time', icon: Clock },
             { to: '/worker/my-entries', label: 'My Entries', icon: FileText },
-          ]} />
+          ]} onNavigate={onNavigate} />
         )}
       </div>
 
@@ -151,7 +161,7 @@ export default function Layout() {
             <button onClick={() => setMobileOpen(false)} className="absolute top-4 right-4 text-slate-400">
               <X className="w-5 h-5" />
             </button>
-            <SidebarContent />
+            <SidebarContent onNavigate={() => setMobileOpen(false)} />
           </aside>
         </div>
       )}

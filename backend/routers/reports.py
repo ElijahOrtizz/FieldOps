@@ -6,6 +6,7 @@ from datetime import date, timedelta
 from database import get_db
 import models
 from auth import get_current_user, require_role
+from services.ot_calculator import classify_week_hours, OTSettings
 
 router = APIRouter()
 
@@ -78,15 +79,32 @@ def get_dashboard_stats(
         if not emp:
             return {"hours_this_week": 0, "entries_this_week": 0, "pending": 0}
 
-        hours_week = db.query(func.sum(models.TimeEntry.total_hours)).filter(
+        week_end = week_start + timedelta(days=6)
+
+        approved_hours = db.query(func.sum(models.TimeEntry.total_hours)).filter(
             models.TimeEntry.employee_id == emp.id,
             models.TimeEntry.date >= week_start,
+            models.TimeEntry.date <= week_end,
+            models.TimeEntry.status.in_(["approved", "exported"]),
         ).scalar() or 0
+        pending_hours = db.query(func.sum(models.TimeEntry.total_hours)).filter(
+            models.TimeEntry.employee_id == emp.id,
+            models.TimeEntry.date >= week_start,
+            models.TimeEntry.date <= week_end,
+            models.TimeEntry.status == "submitted",
+        ).scalar() or 0
+        # All-time rejected: shows open hours waiting for correction, not week-scoped
+        rejected_hours = db.query(func.sum(models.TimeEntry.total_hours)).filter(
+            models.TimeEntry.employee_id == emp.id,
+            models.TimeEntry.status.in_(["rejected", "needs_correction"]),
+        ).scalar() or 0
+
         entries_week = db.query(models.TimeEntry).filter(
             models.TimeEntry.employee_id == emp.id,
             models.TimeEntry.date >= week_start,
+            models.TimeEntry.date <= week_end,
         ).count()
-        pending = db.query(models.TimeEntry).filter(
+        pending_count = db.query(models.TimeEntry).filter(
             models.TimeEntry.employee_id == emp.id,
             models.TimeEntry.status == "submitted",
         ).count()
@@ -95,11 +113,85 @@ def get_dashboard_stats(
             models.MaterialRequest.status == "requested",
         ).count()
 
+        # OT classification — approved + submitted (pending), rejected excluded
+        classifiable_entries = db.query(models.TimeEntry).filter(
+            models.TimeEntry.employee_id == emp.id,
+            models.TimeEntry.date >= week_start,
+            models.TimeEntry.date <= week_end,
+            models.TimeEntry.status.in_(["approved", "exported", "submitted"]),
+        ).all()
+
+        company = db.query(models.CompanySettings).first()
+        ot_settings = OTSettings(
+            daily_ot_threshold=getattr(company, "daily_ot_threshold", None) if company else None,
+            daily_dt_threshold=getattr(company, "daily_dt_threshold", None) if company else None,
+            weekly_ot_threshold=getattr(company, "weekly_ot_threshold", 40.0) if company else 40.0,
+            weekly_dt_threshold=getattr(company, "weekly_dt_threshold", None) if company else None,
+            seventh_day_rule=getattr(company, "seventh_day_rule", False) if company else False,
+            ot_multiplier=getattr(company, "ot_multiplier", 1.5) if company else 1.5,
+            dt_multiplier=getattr(company, "dt_multiplier", 2.0) if company else 2.0,
+        )
+
+        breakdown = classify_week_hours(classifiable_entries, ot_settings, week_start)
+
+        threshold = ot_settings.weekly_ot_threshold
+        hours_until_ot = None
+        if threshold is not None and breakdown.total_hours < threshold:
+            hours_until_ot = round(threshold - breakdown.total_hours, 1)
+
+        # Week strip — all entries for the current week, any status
+        strip_entries = db.query(models.TimeEntry).filter(
+            models.TimeEntry.employee_id == emp.id,
+            models.TimeEntry.date >= week_start,
+            models.TimeEntry.date <= week_end,
+        ).all()
+
+        entries_by_date = {}
+        for e in strip_entries:
+            entries_by_date.setdefault(e.date, []).append(e)
+
+        _day_abbrs = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        week_strip = []
+        for i in range(7):
+            day = week_start + timedelta(days=i)
+            day_entries = entries_by_date.get(day, [])
+            total_h = round(sum(e.total_hours for e in day_entries), 1)
+            statuses = {e.status.value for e in day_entries}
+            if statuses & {"rejected", "needs_correction"}:
+                day_status = "rejected"
+            elif "submitted" in statuses:
+                day_status = "pending"
+            elif statuses & {"approved", "exported"}:
+                day_status = "approved"
+            else:
+                day_status = "none"
+            week_strip.append({
+                "date": day.isoformat(),
+                "day_abbr": _day_abbrs[i],
+                "day_num": day.day,
+                "is_today": day == today,
+                "total_hours": total_h,
+                "status": day_status,
+            })
+
         return {
-            "hours_this_week": round(hours_week, 1),
+            "approved_hours": round(approved_hours, 1),
+            "pending_hours": round(pending_hours, 1),
+            "rejected_hours": round(rejected_hours, 1),
+            # legacy alias kept for any other consumers
+            "hours_this_week": round(approved_hours, 1),
             "entries_this_week": entries_week,
-            "pending_approvals": pending,
+            "pending_approvals": pending_count,
             "pending_materials": my_materials,
+            "weekly_ot_breakdown": {
+                "regular_hours": breakdown.regular_hours,
+                "ot_hours": breakdown.ot_hours,
+                "dt_hours": breakdown.dt_hours,
+                "total_hours": breakdown.total_hours,
+                "weekly_ot_threshold": threshold,
+                "hours_until_ot": hours_until_ot,
+            },
+            "week_strip": week_strip,
         }
 
 

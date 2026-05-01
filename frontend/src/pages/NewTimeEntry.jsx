@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { jobsApi, costCodesApi, timeEntriesApi } from '../utils/api'
 import { PageHeader } from '../components/common'
 import { CheckCircle2, Clock, AlertCircle } from 'lucide-react'
@@ -7,6 +7,7 @@ import { format } from 'date-fns'
 
 export default function NewTimeEntry() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [jobs, setJobs] = useState([])
   const [costCodes, setCostCodes] = useState([])
   const [loading, setLoading] = useState(false)
@@ -14,7 +15,7 @@ export default function NewTimeEntry() {
   const [error, setError] = useState('')
 
   const [form, setForm] = useState({
-    date: format(new Date(), 'yyyy-MM-dd'),
+    date: searchParams.get('date') || format(new Date(), 'yyyy-MM-dd'),
     start_time: '07:00',
     end_time: '15:30',
     total_hours: '8.5',

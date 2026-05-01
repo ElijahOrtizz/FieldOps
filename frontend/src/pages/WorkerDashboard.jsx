@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { reportsApi, timeEntriesApi, scheduleApi, workerApi, jobsApi } from '../utils/api'
-import { StatCard, StatusBadge, PageHeader, LoadingSpinner } from '../components/common'
-import { Clock, Plus, CheckCircle2, TrendingUp, CalendarRange, MapPin, LogIn, LogOut, AlertCircle } from 'lucide-react'
+import { StatusBadge, PageHeader, LoadingSpinner } from '../components/common'
+import WeekStatusStrip from '../components/worker/WeekStatusStrip'
+import { Clock, Plus, CheckCircle2, CalendarRange, MapPin, LogIn, LogOut, AlertCircle } from 'lucide-react'
 import { format } from 'date-fns'
 
 // ── Correction Request Modal ──────────────────────────────────────────────
@@ -154,30 +155,38 @@ export default function WorkerDashboard() {
   return (
     <div>
       <PageHeader
-        title={`Good ${new Date().getHours() < 12 ? 'morning' : 'afternoon'}, ${user?.name?.split(' ')[0]} 👷`}
+        title={`Hello, ${user?.name?.split(' ')[0]} 👷`}
         subtitle={today}
         action={
-          <Link to="/worker/new-entry" className="btn-primary">
-            <Plus className="w-4 h-4" /> Log Time
+          <Link to="/worker/new-entry" className="btn-primary min-h-[44px] flex items-center gap-2">
+            <Plus className="w-5 h-5" /> Log Hours
           </Link>
         }
       />
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <StatCard label="Hours This Week" value={stats?.hours_this_week ?? 0} sub="approved hours" icon={TrendingUp} color="brand" />
-        <StatCard label="Entries This Week" value={stats?.entries_this_week ?? 0} sub="time entries submitted" icon={Clock} color="green" />
-        <StatCard label="Awaiting Approval" value={stats?.pending_approvals ?? 0} sub="submitted entries" icon={Clock} color="amber" />
+      <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="card !p-3 flex flex-col gap-1">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Approved</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-slate-100">{stats?.approved_hours ?? 0}</p>
+          <p className="text-[11px] text-gray-500 dark:text-slate-500">hrs this week</p>
+        </div>
+        <div className="card !p-3 flex flex-col gap-1">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Pending</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-slate-100">{stats?.pending_hours ?? 0}</p>
+          <p className="text-[11px] text-gray-500 dark:text-slate-500">hrs pending</p>
+        </div>
+        <div className="card !p-3 flex flex-col gap-1">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-red-600 dark:text-red-400">Rejected</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-slate-100">{stats?.rejected_hours ?? 0}</p>
+          <p className="text-[11px] text-gray-500 dark:text-slate-500">hrs to fix</p>
+        </div>
       </div>
 
-      {/* Today's Schedule */}
-      {todayAssignments.length === 0 && !loading && (
-        <div className="card mb-5 border border-gray-200 dark:border-slate-800">
-          <p className="text-sm font-medium text-gray-600 dark:text-slate-400">No assignment scheduled for today.</p>
-          <p className="text-xs text-gray-400 dark:text-slate-600 mt-1">Check with your supervisor if this looks wrong.</p>
-        </div>
-      )}
+      {/* Week at a Glance — hero, includes OT footer */}
+      <WeekStatusStrip days={stats?.week_strip} otBreakdown={stats?.weekly_ot_breakdown} />
 
+      {/* Today's Assignment */}
       {todayAssignments.length > 0 && (
         <div className="card mb-5">
           <div className="flex items-center gap-2 mb-3">
@@ -254,17 +263,7 @@ export default function WorkerDashboard() {
       )}
 
       {/* Quick actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-        <Link to="/worker/new-entry"
-          className="card hover:border-brand-300 dark:hover:border-brand-700 transition-colors flex items-center gap-4 group cursor-pointer">
-          <div className="w-10 h-10 bg-brand-600/20 rounded-xl flex items-center justify-center group-hover:bg-brand-600/30 transition-colors">
-            <Clock className="w-5 h-5 text-brand-600 dark:text-brand-400" />
-          </div>
-          <div>
-            <p className="font-semibold text-gray-800 dark:text-slate-200">Log Time Entry</p>
-            <p className="text-xs text-gray-500 dark:text-slate-500">Submit hours for a job</p>
-          </div>
-        </Link>
+      <div className="mb-6">
         <Link to="/worker/my-entries"
           className="card hover:border-gray-300 dark:hover:border-slate-700 transition-colors flex items-center gap-4 group cursor-pointer">
           <div className="w-10 h-10 bg-gray-200 dark:bg-slate-800 rounded-xl flex items-center justify-center">

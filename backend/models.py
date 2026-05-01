@@ -233,6 +233,17 @@ class CompanySettings(Base):
     upload_dir = Column(String, default="uploads")
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
+    # OT/DT classification rules
+    # Defaults match federal FLSA / Iowa (weekly OT at 40 h, no daily thresholds).
+    # Set daily_ot_threshold=8.0, daily_dt_threshold=12.0 for CA/union rules.
+    daily_ot_threshold = Column(Float, nullable=True)   # None = disabled
+    daily_dt_threshold = Column(Float, nullable=True)   # None = disabled
+    weekly_ot_threshold = Column(Float, nullable=True, default=40.0)
+    weekly_dt_threshold = Column(Float, nullable=True)
+    seventh_day_rule = Column(Boolean, default=False)
+    ot_multiplier = Column(Float, default=1.5)
+    dt_multiplier = Column(Float, default=2.0)
+
 
 class PayrollLock(Base):
     __tablename__ = "payroll_locks"

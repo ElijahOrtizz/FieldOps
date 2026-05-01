@@ -261,6 +261,14 @@ def seed():
             overtime_threshold=8.0,
             sage_export_format="sage_100",
             upload_dir="uploads",
+            # OT/DT rules — FLSA/Iowa defaults
+            daily_ot_threshold=None,
+            daily_dt_threshold=None,
+            weekly_ot_threshold=40.0,
+            weekly_dt_threshold=None,
+            seventh_day_rule=False,
+            ot_multiplier=1.5,
+            dt_multiplier=2.0,
         )
         db.add(settings)
         db.commit()
