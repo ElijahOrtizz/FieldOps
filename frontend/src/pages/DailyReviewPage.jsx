@@ -251,7 +251,7 @@ export default function DailyReviewPage() {
                       </div>
                       <p className="text-[10px] text-gray-500 dark:text-slate-500">{e.job_number} · {e.start_time}–{e.end_time}</p>
                     </div>
-                    <span className="font-bold text-gray-800 dark:text-slate-200 shrink-0">{e.hours}h</span>
+                    <span className="font-bold text-gray-800 dark:text-slate-200 shrink-0">{e.total_hours}h</span>
                     {e.status === 'submitted' && (
                       <div className="flex items-center gap-1 shrink-0">
                         <button onClick={() => entryAction(e.id, () => dailyReviewApi.approveEntry(e.id), 'Approved')}

@@ -28,10 +28,18 @@ export default function TimeEntriesPage() {
   const filtered = filter === 'all' ? byEmployee : byEmployee.filter(e => e.status === filter)
   const totalHours = filtered.reduce((s, e) => s + e.total_hours, 0)
 
-  const counts = ['submitted', 'approved', 'rejected', 'exported'].reduce((acc, s) => {
+  const counts = ['submitted', 'needs_correction', 'approved', 'rejected', 'exported'].reduce((acc, s) => {
     acc[s] = byEmployee.filter(e => e.status === s).length
     return acc
   }, {})
+
+  const STATUS_LABEL = {
+    submitted: 'Submitted',
+    needs_correction: 'Needs Correction',
+    approved: 'Approved',
+    rejected: 'Rejected',
+    exported: 'Exported',
+  }
 
   return (
     <div>
@@ -59,8 +67,8 @@ export default function TimeEntriesPage() {
         </button>
         {Object.entries(counts).map(([status, count]) => (
           <button key={status} onClick={() => setFilter(status)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium capitalize transition-colors ${filter === status ? 'bg-brand-600 text-white' : 'bg-gray-200 dark:bg-slate-800 text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-200'}`}>
-            {status} ({count})
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${filter === status ? 'bg-brand-600 text-white' : 'bg-gray-200 dark:bg-slate-800 text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-200'}`}>
+            {STATUS_LABEL[status] || status} ({count})
           </button>
         ))}
       </div>

@@ -130,7 +130,7 @@ def process_approval(
     if not emp:
         raise HTTPException(status_code=400, detail="No employee profile linked")
 
-    old_status = str(entry.status)
+    old_status = entry.status.value if hasattr(entry.status, "value") else str(entry.status)
 
     if data.job_id:
         entry.job_id = data.job_id
