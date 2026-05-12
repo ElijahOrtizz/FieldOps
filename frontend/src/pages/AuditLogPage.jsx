@@ -14,9 +14,6 @@ const ACTION_COLORS = {
   needs_correction: 'text-orange-400 bg-orange-500/10',
   payroll_locked: 'text-amber-400 bg-amber-500/10',
   payroll_unlocked: 'text-slate-400 bg-slate-500/10',
-  sage_prepare: 'text-brand-400 bg-brand-500/10',
-  sage_sync_success: 'text-emerald-400 bg-emerald-500/10',
-  sage_sync_failed: 'text-red-400 bg-red-500/10',
 }
 
 function LogRow({ log }) {

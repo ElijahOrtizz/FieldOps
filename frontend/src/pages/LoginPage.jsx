@@ -22,19 +22,6 @@ export default function LoginPage() {
     }
   }
 
-  const demoLogin = async (role) => {
-    const creds = {
-      admin: { email: 'admin@fieldops.com', password: 'admin123' },
-      supervisor: { email: 'supervisor@fieldops.com', password: 'super123' },
-      worker: { email: 'worker1@fieldops.com', password: 'work123' },
-    }
-    const c = creds[role]
-    setEmail(c.email)
-    setPassword(c.password)
-    const result = await login(c.email, c.password)
-    if (result.success) navigate('/')
-  }
-
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
       {/* Background grid */}
@@ -105,21 +92,6 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Demo logins */}
-          <div className="mt-5 pt-4 border-t border-gray-200 dark:border-slate-800">
-            <p className="text-xs text-gray-500 dark:text-slate-500 mb-2 text-center">Demo accounts</p>
-            <div className="grid grid-cols-3 gap-2">
-              {['admin', 'supervisor', 'worker'].map(role => (
-                <button
-                  key={role}
-                  onClick={() => demoLogin(role)}
-                  className="text-xs py-1.5 px-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 capitalize transition-colors"
-                >
-                  {role}
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
 
         <p className="text-center text-slate-600 text-xs mt-4">

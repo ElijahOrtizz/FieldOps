@@ -9,7 +9,6 @@ from routers import (
     approvals, export, reports, employees,
     material_requests, audit_logs, settings, payroll_locks
 )
-from routers import sage_integration
 from routers import schedule as schedule_router
 from routers import worker as worker_router
 from routers import daily_review as daily_review_router
@@ -39,7 +38,8 @@ def ensure_default_admin():
         db.close()
 
 
-ensure_default_admin()
+if os.getenv("STRYDA_ENV", "prod") == "dev":
+    ensure_default_admin()
 
 
 def ensure_ot_columns():
@@ -93,8 +93,19 @@ ensure_ot_columns()
 
 app = FastAPI(title="Stryda API", version="2.3.0")
 
-_cors_env = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:5173")
-CORS_ORIGINS = [o.strip() for o in _cors_env.split(",") if o.strip()]
+_cors_env = os.getenv("CORS_ORIGINS")
+_stryda_env = os.getenv("STRYDA_ENV", "prod")
+
+if _cors_env:
+    CORS_ORIGINS = [o.strip() for o in _cors_env.split(",") if o.strip()]
+elif _stryda_env == "dev":
+    CORS_ORIGINS = ["http://localhost:3000", "http://localhost:5173"]
+else:
+    raise RuntimeError(
+        "CORS_ORIGINS env var is required when STRYDA_ENV is not 'dev'. "
+        "Set CORS_ORIGINS to a comma-separated list of allowed frontend origins, "
+        "or set STRYDA_ENV=dev for local development."
+    )
 
 app.add_middleware(
     CORSMiddleware,
@@ -128,7 +139,6 @@ app.include_router(schedule_router.router, prefix="/api/schedule", tags=["schedu
 
 # Phase 2.2
 app.include_router(payroll_locks.router, prefix="/api/payroll-locks", tags=["payroll_locks"])
-app.include_router(sage_integration.router, prefix="/api/sage", tags=["sage"])
 
 # Phase 2.4
 app.include_router(worker_router.router, prefix="/api/worker", tags=["worker"])

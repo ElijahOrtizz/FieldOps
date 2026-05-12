@@ -469,8 +469,6 @@ def weekly_timecards(
                         f"{approval.supervisor.first_name} {approval.supervisor.last_name}"
                         if approval and approval.supervisor else None
                     ),
-                    "sage_sync_status": e.sage_sync_status or "not_ready",
-                    "sage_synced_at": e.sage_synced_at.isoformat() if e.sage_synced_at else None,
                     "employee_id": e.employee_id,
                 })
 

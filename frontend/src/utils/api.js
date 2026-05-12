@@ -137,13 +137,6 @@ export const usersApi = {
 
 export default api
 
-// Sage: named sub-routes — no trailing slash
-export const sageApi = {
-  prepare: (data) => api.post('/sage/prepare', data),
-  sync: (data) => api.post('/sage/sync', data),
-  status: (weekStart) => api.get('/sage/status', { params: weekStart ? { week_start: weekStart } : {} }),
-}
-
 // Payroll locks: "/" root keeps slash; named sub-routes do not
 export const payrollLocksApi = {
   list: () => api.get('/payroll-locks/'),

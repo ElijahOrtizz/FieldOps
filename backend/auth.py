@@ -9,7 +9,18 @@ from database import get_db
 import models
 import os
 
-SECRET_KEY = os.getenv("SECRET_KEY", "stryda-dev-secret-key-change-in-production")
+STRYDA_ENV = os.getenv("STRYDA_ENV", "prod")
+_secret_key_env = os.getenv("SECRET_KEY")
+
+if _secret_key_env:
+    SECRET_KEY = _secret_key_env
+elif STRYDA_ENV == "dev":
+    SECRET_KEY = "stryda-dev-secret-key-change-in-production"
+else:
+    raise RuntimeError(
+        "SECRET_KEY env var is required when STRYDA_ENV is not 'dev'. "
+        "Set SECRET_KEY in your deployment environment, or set STRYDA_ENV=dev for local development."
+    )
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 hours
 

@@ -238,7 +238,6 @@ def bulk_approve_by_ids(
             continue
 
         entry.status = "approved"
-        # sage_sync_status stays "not_ready" until /sage/prepare is called on a locked week
 
         old = db.query(models.Approval).filter(models.Approval.time_entry_id == entry_id).first()
         if old:

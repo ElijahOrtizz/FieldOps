@@ -106,8 +106,6 @@ def entry_to_dict(entry):
         } if entry.approval else None,
         "receipts": [{"id": r.id, "filename": r.filename, "original_name": r.original_name}
                      for r in entry.receipts],
-        "sage_sync_status": entry.sage_sync_status or "not_ready",
-        "sage_synced_at": entry.sage_synced_at,
     }
 
 
@@ -439,7 +437,6 @@ def approve_entry(
 
     old_status = cur
     entry.status = "approved"
-    # sage_sync_status stays "not_ready" — only /sage/prepare (on a locked week) sets it to "ready"
 
     old_appr = db.query(models.Approval).filter(models.Approval.time_entry_id == entry_id).first()
     if old_appr:

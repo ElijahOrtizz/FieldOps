@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import {
   reportsApi, employeesApi, jobsApi, costCodesApi,
-  approvalsApi, payrollLocksApi, timeEntriesApi, sageApi
+  approvalsApi, payrollLocksApi, timeEntriesApi
 } from '../utils/api'
 import { useAuth } from '../context/AuthContext'
 import { PageHeader, LoadingSpinner, EmptyState } from '../components/common'
@@ -9,7 +9,7 @@ import TimeEntryEditModal from '../components/common/TimeEntryEditModal'
 import {
   CalendarDays, ChevronLeft, ChevronRight, CheckCircle2,
   Lock, Unlock, Printer, Edit2, CheckSquare, AlertTriangle,
-  Search, X, RotateCcw, Send, RefreshCw, BadgeCheck, Ban,
+  Search, X, RotateCcw, BadgeCheck, Ban,
   MessageSquare, Users, ChevronsUpDown, ChevronDown, ChevronUp,
   Eye, EyeOff
 } from 'lucide-react'
@@ -40,13 +40,6 @@ const STATUS_CFG = {
   draft:     { cls: 'bg-slate-500/15 text-slate-400 border-slate-500/20',       label: 'Draft'    },
   needs_correction: { cls: 'bg-orange-500/15 text-orange-400 border-orange-500/20', label: 'Needs Fix' },
 }
-const SAGE_CFG = {
-  not_ready: null,
-  ready:     { cls: 'text-brand-400',   label: '⚡ Ready'  },
-  synced:    { cls: 'text-emerald-400', label: '✓ Synced' },
-  failed:    { cls: 'text-red-400',     label: '✗ Failed' },
-}
-
 function Badge({ status }) {
   const cfg = STATUS_CFG[status] || STATUS_CFG.draft
   return (
@@ -55,12 +48,6 @@ function Badge({ status }) {
     </span>
   )
 }
-function SageBadge({ syncStatus }) {
-  const cfg = SAGE_CFG[syncStatus]
-  if (!cfg) return null
-  return <span className={`text-[10px] font-semibold ${cfg.cls}`}>{cfg.label}</span>
-}
-
 // ─── print CSS ─────────────────────────────────────────────────────────────────
 const PRINT_CSS = `@media print {
   body * { visibility: hidden; }
@@ -168,7 +155,6 @@ const CHIPS = [
   { key: 'approved',     label: 'Approved',         color: 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' },
   { key: 'rejected',     label: 'Rejected',         color: 'text-red-400 border-red-500/30 bg-red-500/10' },
   { key: 'exported',     label: 'Exported',         color: 'text-purple-400 border-purple-500/30 bg-purple-500/10' },
-  { key: 'sage_ready',   label: 'Ready for Sage',   color: 'text-brand-400 border-brand-500/30 bg-brand-500/10' },
 ]
 
 function employeeMatchesChip(emp, chip) {
@@ -177,8 +163,7 @@ function employeeMatchesChip(emp, chip) {
   if (chip === 'needs_review') return entries.some(e => e.status === 'submitted' || e.status === 'needs_correction')
   if (chip === 'approved')     return entries.some(e => e.status === 'approved')
   if (chip === 'rejected')     return entries.some(e => e.status === 'rejected')
-  if (chip === 'exported')     return entries.some(e => e.status === 'exported' || e.sage_sync_status === 'synced')
-  if (chip === 'sage_ready')   return entries.some(e => e.sage_sync_status === 'ready')
+  if (chip === 'exported')     return entries.some(e => e.status === 'exported')
   return true
 }
 
@@ -238,7 +223,6 @@ function DayCell({ day, canApprove, isLocked, onAction, onEdit, onApproveDay, ap
             <span className="font-mono text-[10px] text-brand-600 dark:text-brand-400 font-semibold leading-none truncate">{e.job_number}</span>
             <div className="flex items-center gap-0.5 shrink-0">
               <Badge status={e.status} />
-              <SageBadge syncStatus={e.sage_sync_status} />
               <EntryActions entry={e} canApprove={canApprove} isLocked={isLocked}
                 onAction={onAction} onEdit={onEdit} />
             </div>
@@ -269,8 +253,8 @@ function DayCell({ day, canApprove, isLocked, onAction, onEdit, onApproveDay, ap
 
 // ─── employee card ─────────────────────────────────────────────────────────────
 function EmployeeCard({ emp, defaultCollapsed, canApprove, isLocked, isAdmin,
-                        onAction, onEdit, onApproveDay, onApproveWeek, onSageSync,
-                        approving, sageSyncing, forceCollapse }) {
+                        onAction, onEdit, onApproveDay, onApproveWeek,
+                        approving, forceCollapse }) {
   const [collapsed, setCollapsed] = useState(defaultCollapsed)
 
   // Respond to global expand/collapse commands
@@ -281,8 +265,6 @@ function EmployeeCard({ emp, defaultCollapsed, canApprove, isLocked, isAdmin,
   const entries = emp.days.flatMap(d => d.entries)
   const submitted  = entries.filter(e => e.status === 'submitted' || e.status === 'needs_correction').length
   const rejected   = entries.filter(e => e.status === 'rejected').length
-  const readyForSage = entries.filter(e => e.sage_sync_status === 'ready').length
-  const syncedCount  = entries.filter(e => e.sage_sync_status === 'synced').length
   const allApproved  = emp.submitted_hours === 0 && emp.rejected_hours === 0 && emp.approved_hours > 0
 
   return (
@@ -311,7 +293,6 @@ function EmployeeCard({ emp, defaultCollapsed, canApprove, isLocked, isAdmin,
               {emp.rejected_hours  > 0 && <span className="text-[9px] font-semibold text-red-400">{emp.rejected_hours}h rej.</span>}
               {emp.needs_correction_hours > 0 && <span className="text-[9px] font-semibold text-orange-400">{emp.needs_correction_hours}h fix</span>}
               {emp.exported_hours  > 0 && <span className="text-[9px] font-semibold text-purple-400">{emp.exported_hours}h exp.</span>}
-              {syncedCount         > 0 && <span className="text-[9px] font-semibold text-brand-400">{syncedCount} synced</span>}
             </div>
           </div>
           {collapsed
@@ -326,13 +307,6 @@ function EmployeeCard({ emp, defaultCollapsed, canApprove, isLocked, isAdmin,
               className="btn-success text-[10px] py-1 px-2 flex items-center gap-1 disabled:opacity-40"
               title={`Approve ${submitted} pending entries`}>
               <CheckSquare className="w-3 h-3" />{submitted}
-            </button>
-          )}
-          {isAdmin && readyForSage > 0 && (
-            <button onClick={() => onSageSync(emp)} disabled={sageSyncing}
-              className="text-[10px] py-1 px-2 rounded-lg border border-brand-500/30 text-brand-400 hover:bg-brand-500/10 flex items-center gap-1 disabled:opacity-40"
-              title={`Sync ${readyForSage} entries to Sage`}>
-              <Send className="w-3 h-3" />{readyForSage}
             </button>
           )}
         </div>
@@ -388,7 +362,6 @@ function EmployeeCard({ emp, defaultCollapsed, canApprove, isLocked, isAdmin,
                         <div className="flex items-center gap-1.5 mb-0.5">
                           <span className="font-mono text-[10px] text-brand-600 dark:text-brand-400 font-semibold">{e.job_number}</span>
                           <Badge status={e.status} />
-                          <SageBadge syncStatus={e.sage_sync_status} />
                         </div>
                         <p className="text-[10px] text-gray-500 dark:text-slate-600">{e.cost_code}</p>
                       </div>
@@ -430,7 +403,6 @@ function FilterBar({
   employees, filterEmp, setFilterEmp,
   jobs, filterJob, setFilterJob,
   filterStatus, setFilterStatus,
-  filterSage, setFilterSage,
   activeChip, setActiveChip,
   onlyWithTime, setOnlyWithTime,
   onClearFilters, hasFilters,
@@ -614,7 +586,6 @@ export default function WeeklyTimecardsPage() {
   const [loading, setLoading]       = useState(true)
   const [lockInfo, setLockInfo]     = useState({ locked: false, lock: null })
   const [approving, setApproving]   = useState(false)
-  const [sageSyncing, setSageSyncing] = useState(false)
   const [toast, setToast]           = useState(null)
   const [editEntryId, setEditEntryId]   = useState(null)
   const [editEntryData, setEditEntryData] = useState(null)
@@ -624,12 +595,11 @@ export default function WeeklyTimecardsPage() {
   const [filterEmp, setFilterEmp]       = useState('')
   const [filterJob, setFilterJob]       = useState('')
   const [filterStatus, setFilterStatus] = useState('')
-  const [filterSage, setFilterSage]     = useState('')
   const [activeChip, setActiveChip]     = useState('all')
   const [onlyWithTime, setOnlyWithTime] = useState(false)
   const [forceCollapse, setForceCollapse] = useState(null)  // null=no force, true=collapse, false=expand
 
-  const hasFilters = !!(search || filterEmp || filterJob || filterStatus || filterSage || activeChip !== 'all' || onlyWithTime)
+  const hasFilters = !!(search || filterEmp || filterJob || filterStatus || activeChip !== 'all' || onlyWithTime)
 
   // Load support data once
   useEffect(() => {
@@ -674,11 +644,6 @@ export default function WeeklyTimecardsPage() {
         !(emp.trade || '').toLowerCase().includes(q)
       ) return false
     }
-    // sage filter dropdown
-    if (filterSage) {
-      const entries = emp.days.flatMap(d => d.entries)
-      if (!entries.some(e => e.sage_sync_status === filterSage)) return false
-    }
     // quick chip
     if (!employeeMatchesChip(emp, activeChip)) return false
     return true
@@ -690,8 +655,6 @@ export default function WeeklyTimecardsPage() {
   const allEntries = filteredEmployees.flatMap(e => e.days.flatMap(d => d.entries))
   const submittedCount  = allEntries.filter(e => e.status === 'submitted' || e.status === 'needs_correction').length
   const approvedCount   = allEntries.filter(e => e.status === 'approved').length
-  const readyForSageCount = allEntries.filter(e => e.sage_sync_status === 'ready').length
-  const syncedCount     = allEntries.filter(e => e.sage_sync_status === 'synced').length
 
   const summary = data?.summary
   const withTimeCount = summary?.employees_with_time
@@ -786,28 +749,6 @@ export default function WeeklyTimecardsPage() {
     } catch (e) { showToast(e.response?.data?.detail || 'Error unlocking', 'error') }
   }
 
-  // ── Sage sync ───────────────────────────────────────────────────────────────
-  const handleSageSync = async (emp) => {
-    const readyIds = emp.days.flatMap(d => d.entries)
-      .filter(e => e.sage_sync_status === 'ready').map(e => e.id)
-    if (!readyIds.length) return
-    setSageSyncing(true)
-    try {
-      const r = await sageApi.sync({ entry_ids: readyIds })
-      showToast(`Synced ${r.data.synced_count}${r.data.failed_count ? `, ${r.data.failed_count} failed` : ''} entries`)
-      load()
-    } catch (e) { showToast(e.response?.data?.detail || 'Sage sync error', 'error') }
-    finally { setSageSyncing(false) }
-  }
-
-  const handleSagePrepareAll = async () => {
-    try {
-      const r = await sageApi.prepare({ week_start: weekStart })
-      showToast(`${r.data.marked_ready} entries marked ready for Sage`)
-      load()
-    } catch (e) { showToast(e.response?.data?.detail || 'Error', 'error') }
-  }
-
   // ── Edit modal ──────────────────────────────────────────────────────────────
   const handleEdit = async (entryId) => {
     try {
@@ -830,12 +771,12 @@ export default function WeeklyTimecardsPage() {
 
   const clearFilters = () => {
     setSearch(''); setFilterEmp(''); setFilterJob('')
-    setFilterStatus(''); setFilterSage(''); setActiveChip('all'); setOnlyWithTime(false)
+    setFilterStatus(''); setActiveChip('all'); setOnlyWithTime(false)
   }
 
   return (
     <div>
-      <PageHeader title="Weekly Timecards" subtitle="Payroll review, approval, lock, and Sage sync" />
+      <PageHeader title="Weekly Timecards" subtitle="Payroll review, approval, and lock" />
 
       {/* ── Sticky Filter Bar ── */}
       <FilterBar
@@ -844,7 +785,6 @@ export default function WeeklyTimecardsPage() {
         employees={allEmployees} filterEmp={filterEmp} setFilterEmp={setFilterEmp}
         jobs={jobs} filterJob={filterJob} setFilterJob={setFilterJob}
         filterStatus={filterStatus} setFilterStatus={setFilterStatus}
-        filterSage={filterSage} setFilterSage={setFilterSage}
         activeChip={activeChip} setActiveChip={setActiveChip}
         onlyWithTime={onlyWithTime} setOnlyWithTime={setOnlyWithTime}
         onClearFilters={clearFilters} hasFilters={hasFilters}
@@ -883,8 +823,6 @@ export default function WeeklyTimecardsPage() {
             { label: 'Total',       val: (summary.total_hours || 0) + 'h',     col: 'text-gray-900 dark:text-slate-100' },
             { label: 'Approved',    val: (summary.approved_hours || 0) + 'h',  col: 'text-emerald-400' },
             { label: 'Pending',     val: (summary.submitted_hours || 0) + 'h', col: 'text-amber-400' },
-            { label: 'Sage Ready',  val: readyForSageCount + ' entries',       col: 'text-brand-400' },
-            { label: 'Synced',      val: syncedCount + ' entries',             col: 'text-brand-300' },
             { label: 'Approved →',  val: approvedCount + ' entries',           col: 'text-emerald-500' },
           ].map(s => (
             <div key={s.label} className="card !py-2 !px-3">
@@ -895,20 +833,10 @@ export default function WeeklyTimecardsPage() {
         </div>
       )}
 
-      {/* ── Job summary + Sage prep ── */}
       {!loading && summary?.hours_by_job?.length > 0 && (
         <div className="card mb-4 !py-2 no-print">
           <div className="flex items-center justify-between mb-1.5">
             <p className="text-[9px] font-bold text-slate-600 uppercase tracking-wider">Hours by Job This Week</p>
-            {isAdmin && readyForSageCount === 0 && approvedCount > 0 && (
-              <button onClick={handleSagePrepareAll}
-                className="text-[10px] text-brand-500 hover:text-brand-400 flex items-center gap-1 underline underline-offset-2">
-                <RefreshCw className="w-3 h-3" /> Prepare for Sage
-              </button>
-            )}
-            {isAdmin && readyForSageCount > 0 && (
-              <span className="text-[10px] text-brand-500">{readyForSageCount} ready — use ⚡ buttons below</span>
-            )}
           </div>
           <div className="flex flex-wrap gap-1.5">
             {summary.hours_by_job.map(j => (
@@ -940,8 +868,7 @@ export default function WeeklyTimecardsPage() {
               isAdmin={isAdmin}
               onAction={handleAction} onEdit={handleEdit}
               onApproveDay={handleApproveDay} onApproveWeek={handleApproveWeek}
-              onSageSync={handleSageSync}
-              approving={approving} sageSyncing={sageSyncing}
+              approving={approving}
               forceCollapse={forceCollapse}
             />
           ))}
