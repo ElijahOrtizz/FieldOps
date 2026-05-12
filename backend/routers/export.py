@@ -11,10 +11,14 @@ from audit import log_action
 
 router = APIRouter()
 
+# Sage 100 US payroll/time-entry CSV exports default to MM/DD/YYYY;
+# other Visual Integrator formats may be client-map-specific.
+SAGE_DATE_FMT = "%m/%d/%Y"
+
 
 def _entry_rows(entries):
     """Build CSV rows for given entries."""
-    now_str = datetime.now().strftime("%Y-%m-%d")
+    now_str = datetime.now().strftime(SAGE_DATE_FMT)
     rows = []
     for e in entries:
         emp = e.employee
@@ -28,7 +32,7 @@ def _entry_rows(entries):
         if approval and approval.supervisor:
             sup = approval.supervisor
             approved_by = f"{sup.first_name} {sup.last_name}"
-            approval_date = approval.created_at.strftime("%Y-%m-%d") if approval.created_at else ""
+            approval_date = approval.created_at.strftime(SAGE_DATE_FMT) if approval.created_at else ""
         rows.append([
             sage_emp_id,
             f"{emp.first_name} {emp.last_name}" if emp else "",
@@ -36,7 +40,7 @@ def _entry_rows(entries):
             job.job_name if job else "",
             cc.code if cc else "",
             cc.description if cc else "",
-            e.date.strftime("%Y-%m-%d") if e.date else "",
+            e.date.strftime(SAGE_DATE_FMT) if e.date else "",
             day_of_week,
             e.start_time or "",
             e.end_time or "",
