@@ -24,331 +24,127 @@ Stryda is designed to help contractors move from field work to clean payroll and
 
 ## Why Stryda
 
-Many small-to-mid construction companies use Sage for payroll and accounting, but still collect field time manually. That creates problems every week:
-
-- Foremen text hours at the end of the day
-- Payroll admins manually enter time into Sage
-- Workers get coded to the wrong job or cost code
-- Overtime is discovered too late
-- Job-cost reports are only useful after the damage is done
-- There is no clean audit trail for approvals, corrections, or payroll changes
-
-Stryda is designed to close that gap.
+Many small contractors use Sage for payroll but still collect field time by text, paper, or spreadsheet. That causes slow payroll prep, wrong job codes, overtime found too late, and no record of who changed what. Stryda collects time on a phone, checks it as it is entered, routes it through approval, and produces a CSV that Sage can import.
 
 ---
 
-## Core Workflow
+## Workflow
 
 ```text
-Crew Schedule
-    ↓
-Worker sees today’s assignment
-    ↓
-Worker clocks in/out
-    ↓
-Supervisor reviews daily work
-    ↓
-Payroll reviews weekly timecards
-    ↓
-Admin locks payroll
-    ↓
-Approved locked time is prepared for Sage
-    ↓
-Owner sees labor cost and job-cost risk
+Worker logs or clocks hours  ->  Supervisor reviews the day  ->  Admin approves the week
+  ->  Admin locks payroll  ->  Admin downloads the Sage CSV
 ```
 
----
-
-## Target Users
-
-Stryda is built for construction companies with roughly **20–250 field workers**, especially:
-
-- Electrical subcontractors
-- Plumbing contractors
-- HVAC contractors
-- Concrete contractors
-- Mechanical contractors
-- General contractors with self-performing crews
-- Sage 100 Contractor or Sage 300 CRE users
+Every approval, edit, rejection, lock, and export writes a record to the audit log.
 
 ---
 
-## Key Features
+## Features
 
-### Crew Scheduling
+- **Worker:** today's assignment, clock in and out, log hours, week at a glance, correction requests, mobile friendly layout.
+- **Supervisor:** daily review of scheduled vs actual time, approval queue, daily sign-off.
+- **Admin:** weekly timecards, payroll lock and unlock, jobs, employees, cost codes, company settings, audit log, reports, Sage CSV export and export history.
+- **Overtime:** regular, overtime, and double time hours are classified from configurable company settings. The default is federal: overtime over 40 hours in a workweek.
+- **Safety checks:** 16 hour cap per entry, no future dates, 14 day lookback, duplicate submission window, approved entries locked from worker edits, role checks on every API route.
 
-- Weekly crew schedule board
-- Assign workers to jobs by day
-- Planned start and end times
-- Supervisor and trade/role filters
-- Schedule vs actual variance checks
-- Print-ready crew sheets
+### Sage integration
 
-### Worker Dashboard
-
-- Today’s assignment view
-- Clock in / clock out workflow
-- Recent time entries
-- Correction request workflow
-- Mobile-friendly field layout
-
-### Supervisor Daily Review
-
-- Review scheduled crew vs actual time
-- Catch missing clock-ins
-- Catch wrong-job time entries
-- Mark workers absent
-- Approve, reject, or request corrections
-- Daily sign-off workflow
-
-### Weekly Timecards
-
-- Employee weekly timecard view
-- Daily job and cost-code breakdown
-- Approve individual entries
-- Bulk approve visible entries
-- Needs-correction workflow
-- Payroll lock and unlock controls
-
-### Sage-Ready Payroll Flow
-
-- Approved and locked time can be prepared for Sage
-- Sage sync status tracking
-- Export/sync history
-- Failed sync retry structure
-- Designed for Sage-compatible payroll and job-cost workflows
-
-### Job Costing
-
-- Labor hours by job
-- Cost-code breakdown
-- Planned vs actual labor
-- Overtime risk
-- Budget tracking
-- Job-cost risk visibility before payroll closes
-
-### Admin Tools
-
-- Jobs
-- Employees
-- Cost codes
-- Material requests
-- Reports
-- Audit history
-- Role-based access control
+Stryda exports a **Sage-ready CSV**. There is no live Sage API sync, by design. The Export to Sage page filters approved entries by date and job, shows a preview, and downloads the file. The "mark as exported" box is checked by default, which marks the entries as exported when the file is generated. Uncheck it to download without changing entry status.
 
 ---
 
 ## Tech Stack
 
-### Frontend
-
-- React
-- Vite
-- JavaScript
-- Responsive dashboard UI
-
-### Backend
-
-- FastAPI
-- Python
-- SQLAlchemy
-- SQLite for local development
-- JWT authentication
-- Role-based permissions
+- **Frontend:** React, Vite, Tailwind CSS
+- **Backend:** Python, FastAPI, SQLAlchemy, JWT authentication
+- **Database:** SQLite for local development, PostgreSQL in production
+- **Tests and CI:** pytest, GitHub Actions
 
 ---
 
-## Project Structure
+## Run it locally
 
-```text
-stryda/
-├── backend/
-│   ├── main.py
-│   ├── models.py
-│   ├── database.py
-│   ├── auth.py
-│   ├── audit.py
-│   ├── seed.py
-│   ├── seed_large.py
-│   └── routers/
-│       ├── auth.py
-│       ├── jobs.py
-│       ├── employees.py
-│       ├── cost_codes.py
-│       ├── time_entries.py
-│       ├── approvals.py
-│       ├── schedule.py
-│       ├── worker.py
-│       ├── daily_review.py
-│       ├── reports.py
-│       ├── sage.py
-│       └── material_requests.py
-│
-├── frontend/
-│   ├── package.json
-│   └── src/
-│       ├── pages/
-│       ├── components/
-│       └── utils/
-│
-├── docs/
-│   └── demo/
-│       └── stryda-demo.mov
-│
-└── README.md
-```
+Requirements: Python 3.11, Node 20.
 
----
-
-## Local Setup
-
-### 1. Start the Backend
+### 1. Backend
 
 ```bash
 cd backend
-
 python3 -m venv .venv
 source .venv/bin/activate
-
 pip install -r requirements.txt
 
-python3 seed.py
-python3 seed_large.py
-
-python3 -m uvicorn main:app --reload --port 8000
+export STRYDA_ENV=dev        # required for local development
+python seed.py               # creates demo users and sample data
+uvicorn main:app --reload --port 8000
 ```
 
-Backend API:
+API docs: http://localhost:8000/docs
 
-```text
-http://localhost:8000
-```
+### 2. Frontend
 
-API docs:
-
-```text
-http://localhost:8000/docs
-```
-
----
-
-### 2. Start the Frontend
-
-Open a second terminal:
+In a second terminal:
 
 ```bash
 cd frontend
-
 npm install
 npm run dev
 ```
 
-Frontend app:
+App: http://localhost:3000 (the dev server proxies `/api` to port 8000).
 
-```text
-http://localhost:3000
-```
-
----
-
-## Demo Logins
-
-These are local demo credentials only.
+### Demo logins (local development only)
 
 | Role | Email | Password |
 |---|---|---|
-| Admin | admin@stryda.com | admin123 |
-| Supervisor | supervisor@stryda.com | supervisor123 |
-| Worker | worker1@stryda.com | work123 |
+| Admin | admin@fieldops.com | admin123 |
+| Supervisor | supervisor@fieldops.com | super123 |
+| Worker | worker1@fieldops.com | work123 |
 
-Do not use these credentials in production.
-
----
-
-## Suggested Demo Flow
-
-1. Log in as admin.
-2. Open **Crew Schedule** and assign workers to jobs.
-3. Log in as a worker and view today’s assignment.
-4. Clock in and clock out.
-5. Log in as supervisor and open **Daily Review**.
-6. Review submitted time, missing time, and wrong-job flags.
-7. Log in as admin and open **Weekly Timecards**.
-8. Approve entries and lock payroll.
-9. Prepare approved locked time for Sage.
-10. Open reports/job costing to review labor risk.
+These exist only in the local seed data. Never use them in production.
 
 ---
 
-## Product Strategy
+## Environment variables
 
-Stryda is not trying to replace large enterprise construction platforms. It is focused on a narrower and more practical niche:
+| Variable | Used by | Notes |
+|---|---|---|
+| `STRYDA_ENV` | backend | `dev` for local work. Anything else is treated as production. |
+| `SECRET_KEY` | backend | Required unless `STRYDA_ENV=dev`. |
+| `CORS_ORIGINS` | backend | Comma separated frontend origins. Required unless `STRYDA_ENV=dev`. |
+| `DATABASE_URL` | backend | Defaults to a local SQLite file. Use a PostgreSQL URL in production. |
+| `VITE_API_URL` | frontend build | Backend base URL in production, no trailing slash. |
 
-> Field-to-payroll operations for Sage-based contractors.
-
-The competitive advantage is the connection between:
-
-- Field scheduling
-- Worker time capture
-- Supervisor review
-- Payroll approval
-- Sage-ready sync
-- Job-cost visibility
-
-This makes Stryda useful to foremen, payroll admins, and owners without requiring a full enterprise project management rollout.
+Secrets belong in environment variables, never in the repository or the frontend.
 
 ---
 
-## Roadmap
+## Tests
 
-### Phase 2.6 — Job Costing Dashboard
+```bash
+cd backend
+STRYDA_ENV=dev python -m pytest -q
+```
 
-- Budget vs actual labor
-- Cost-code breakdown
-- Overtime risk
-- Job-cost snapshots
-
-### Phase 2.7 — Materials and Purchase Requests
-
-- Material request workflow
-- Supervisor approval
-- Job/cost-code allocation
-- Material cost visibility
-
-### Phase 2.8 — Sage Mapping and Integration Center
-
-- Employee mapping
-- Job mapping
-- Cost-code mapping
-- Sage 100 / Sage 300 export configuration
-- Sync logs and retry tools
-
-### Phase 2.9 — Admin Company Setup
-
-- Company profile
-- User invites
-- Employee CSV import
-- Payroll week configuration
-- Overtime settings
-- Sage export format selection
-
-### Phase 3.0 — AI Operations Layer
-
-- Missing time alerts
-- Overtime risk alerts
-- Wrong-job anomaly detection
-- Job-cost risk summaries
-- Weekly owner reports
+The suite covers entry validation, overtime and double time classification, role permissions, audit records, payroll locking, Sage CSV export, and a three pay period accuracy check against hand calculated totals (synthetic data). GitHub Actions runs the backend compile check and tests, plus the frontend build, on every push.
 
 ---
 
-## Current Status
+## Guides
 
-Stryda is an active full-stack MVP. The current version demonstrates the main field-to-payroll workflow locally, including scheduling, time tracking, supervisor review, payroll approval, job costing, and Sage-ready export/sync structure.
+- [Admin and payroll guide](docs/ADMIN_GUIDE.md)
+- [Worker quick guide](docs/WORKER_QUICK_GUIDE.md)
+
+---
+
+## Known limitations
+
+- Sage is CSV only. The CSV has total hours per entry; it does not split regular and overtime hours.
+- Overtime breakdown is shown on the worker dashboard for the current week.
+- Pilot results with Calray Electric are still being collected.
 
 ---
 
 ## Author
 
-Built by **Eli Ortiz** as a full-stack software engineering and product strategy project.
+Built by **Eli Ortiz** as a CSIT4100 capstone project at Graceland University.
