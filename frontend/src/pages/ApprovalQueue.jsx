@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { approvalsApi } from '../utils/api'
+import { approvalsApi, errMsg } from '../utils/api'
 import { PageHeader, StatusBadge, EmptyState, LoadingSpinner, Modal } from '../components/common'
 import { CheckCircle2, XCircle, MessageSquare, CheckSquare, Zap } from 'lucide-react'
 
@@ -134,7 +134,7 @@ export default function ApprovalQueue() {
       setToast({ msg: data.action === 'approved' ? 'Entry approved' : 'Entry rejected', type: 'success' })
       load()
     } catch (e) {
-      setToast({ msg: e.response?.data?.detail || 'Action failed', type: 'error' })
+      setToast({ msg: errMsg(e, 'Action failed'), type: 'error' })
     } finally {
       setActionLoading(null)
     }
@@ -149,7 +149,7 @@ export default function ApprovalQueue() {
       setToast({ msg: `${count} entries approved`, type: 'success' })
       load()
     } catch (err) {
-      setToast({ msg: err.response?.data?.detail || 'Bulk approve failed', type: 'error' })
+      setToast({ msg: errMsg(err, 'Bulk approve failed'), type: 'error' })
     }
   }
 

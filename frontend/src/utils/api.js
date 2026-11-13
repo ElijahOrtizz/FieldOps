@@ -176,3 +176,12 @@ export const dailyReviewApi = {
   rejectCorrection: (id, data = {}) => api.post(`/supervisor/correction-requests/${id}/reject`, data),
   signoff: (data) => api.post('/supervisor/daily-signoff', data),
 }
+
+// FastAPI returns `detail` as a string for HTTPException but as an array of
+// objects for 422 validation errors. Never put the raw value in JSX.
+export const errMsg = (err, fallback) => {
+  const d = err?.response?.data?.detail
+  if (typeof d === 'string') return d
+  if (Array.isArray(d)) return d.map((x) => x?.msg).filter(Boolean).join('; ') || fallback
+  return fallback
+}

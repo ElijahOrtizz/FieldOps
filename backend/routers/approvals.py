@@ -113,7 +113,7 @@ def supervisor_edit_entry(
     return entry_to_dict(entry)
 
 
-@router.post("/{entry_id}")
+@router.post("/{entry_id:int}")
 def process_approval(
     entry_id: int,
     data: ApprovalAction,
