@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from database import get_db
 import models
+import ratelimit
 from auth import verify_password, get_password_hash, create_access_token, get_current_user
 
 router = APIRouter()
@@ -26,10 +27,24 @@ class TokenResponse(BaseModel):
 
 
 @router.post("/login", response_model=TokenResponse)
-def login(request: LoginRequest, db: Session = Depends(get_db)):
+def login(request: LoginRequest, http_request: Request, db: Session = Depends(get_db)):
+    email_key = request.email.strip().lower()
+    forwarded = http_request.headers.get("x-forwarded-for", "")
+    ip = forwarded.split(",")[0].strip() or (http_request.client.host if http_request.client else "unknown")
+
+    wait = ratelimit.retry_after(email_key, ip)
+    if wait:
+        raise HTTPException(
+            status_code=429,
+            detail=f"Too many failed login attempts. Try again in {max(1, wait // 60)} minute(s).",
+            headers={"Retry-After": str(wait)},
+        )
+
     user = db.query(models.User).filter(models.User.email == request.email).first()
     if not user or not verify_password(request.password, user.hashed_password):
+        ratelimit.record_failure(email_key, ip)
         raise HTTPException(status_code=401, detail="Invalid email or password")
+    ratelimit.record_success(email_key)
     if not user.is_active:
         raise HTTPException(status_code=403, detail="Account is disabled")
 
