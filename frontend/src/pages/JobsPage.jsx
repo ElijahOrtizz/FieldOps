@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { jobsApi } from '../utils/api'
+import { jobsApi, errMsg } from '../utils/api'
 import { PageHeader, EmptyState, LoadingSpinner, Modal } from '../components/common'
 import { Briefcase, Plus, Edit2, Archive } from 'lucide-react'
 
@@ -52,7 +52,7 @@ function JobForm({ job, onSave, onClose }) {
       else await jobsApi.create(data)
       onSave()
     } catch (e) {
-      alert(e.response?.data?.detail || 'Error saving job')
+      alert(errMsg(e, 'Error saving job'))
     } finally { setLoading(false) }
   }
 

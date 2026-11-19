@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
-import { dailyReviewApi, jobsApi } from '../utils/api'
+import { dailyReviewApi, jobsApi, errMsg } from '../utils/api'
 import { useAuth } from '../context/AuthContext'
 import { PageHeader, LoadingSpinner, EmptyState } from '../components/common'
 import {
@@ -74,7 +74,7 @@ export default function DailyReviewPage() {
 
   const action = async (fn, successMsg) => {
     try { await fn(); showToast(successMsg); load() }
-    catch (e) { showToast(e.response?.data?.detail || 'Error', 'error') }
+    catch (e) { showToast(errMsg(e, 'Error'), 'error') }
   }
 
   const entryAction = async (id, fn, successMsg) => {

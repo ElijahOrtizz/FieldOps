@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react'
-import { authApi } from '../utils/api'
+import { authApi, errMsg } from '../utils/api'
 
 const AuthContext = createContext(null)
 
@@ -20,7 +20,7 @@ export function AuthProvider({ children }) {
       setUser(userData)
       return { success: true }
     } catch (err) {
-      return { success: false, error: err.response?.data?.detail || 'Login failed' }
+      return { success: false, error: errMsg(err, 'Login failed') }
     } finally {
       setLoading(false)
     }

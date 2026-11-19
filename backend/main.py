@@ -12,6 +12,7 @@ from routers import (
 from routers import schedule as schedule_router
 from routers import worker as worker_router
 from routers import daily_review as daily_review_router
+from routers import alerts as alerts_router
 
 Base.metadata.create_all(bind=engine)
 
@@ -147,6 +148,7 @@ app.include_router(payroll_locks.router, prefix="/api/payroll-locks", tags=["pay
 app.include_router(worker_router.router, prefix="/api/worker", tags=["worker"])
 # Phase 2.5
 app.include_router(daily_review_router.router, prefix="/api/supervisor", tags=["daily_review"])
+app.include_router(alerts_router.router, prefix="/api/alerts", tags=["alerts"])
 
 
 @app.get("/api/health")

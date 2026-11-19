@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { materialRequestsApi, jobsApi, costCodesApi } from '../utils/api'
+import { materialRequestsApi, jobsApi, costCodesApi, errMsg } from '../utils/api'
 import { useAuth } from '../context/AuthContext'
 import { PageHeader, EmptyState, LoadingSpinner, Modal, StatusBadge } from '../components/common'
 import { Package, Plus, Edit2, Trash2, CheckCircle2, XCircle } from 'lucide-react'
@@ -41,7 +41,7 @@ function MRModal({ mr, jobs, costCodes, onSave, onClose, userRole }) {
       await onSave({ ...form, job_id: Number(form.job_id), cost_code_id: form.cost_code_id ? Number(form.cost_code_id) : null, quantity: Number(form.quantity) })
       onClose()
     } catch (e) {
-      alert(e.response?.data?.detail || 'Error saving')
+      alert(errMsg(e, 'Error saving'))
     } finally { setLoading(false) }
   }
 
@@ -112,7 +112,7 @@ function StatusModal({ mr, onSave, onClose }) {
       await onSave(mr.id, { status, denial_reason: denialReason || undefined })
       onClose()
     } catch (e) {
-      alert(e.response?.data?.detail || 'Error')
+      alert(errMsg(e, 'Error'))
     } finally { setLoading(false) }
   }
 
