@@ -43,51 +43,62 @@ if os.getenv("STRYDA_ENV", "prod") == "dev":
     ensure_default_admin()
 
 
-def ensure_ot_columns():
+def ensure_ot_columns(eng=None):
     """
     Idempotent startup migration: adds OT/DT columns to company_settings
-    if they don't already exist, then backfills defaults on existing rows.
-    Works on both SQLite and PostgreSQL.
+    if they are missing, then backfills defaults on rows that have NULLs.
+
+    Safe to run any number of times, and on both SQLite and PostgreSQL:
+    - only columns that are really missing are added (checked with the inspector),
+    - only a "column already exists" race between two starting servers is ignored,
+      any other error stops startup instead of being hidden,
+    - the backfill goes through the ORM, so booleans are typed correctly on Postgres.
     """
-    from sqlalchemy import text
+    from sqlalchemy import text, inspect
+    from sqlalchemy.exc import DBAPIError
+    from sqlalchemy.orm import Session
+    import models
+
+    eng = eng or engine
     new_columns = [
         ("daily_ot_threshold",  "REAL"),
         ("daily_dt_threshold",  "REAL"),
         ("weekly_ot_threshold", "REAL"),
         ("weekly_dt_threshold", "REAL"),
-        ("seventh_day_rule",    "INTEGER"),
+        ("seventh_day_rule",    "BOOLEAN"),
         ("ot_multiplier",       "REAL"),
         ("dt_multiplier",       "REAL"),
     ]
-    with engine.connect() as conn:
+
+    def existing():
+        return {c["name"] for c in inspect(eng).get_columns("company_settings")}
+
+    have = existing()
+    with eng.connect() as conn:
         for col_name, col_type in new_columns:
+            if col_name in have:
+                continue
             try:
                 conn.execute(text(
                     f"ALTER TABLE company_settings ADD COLUMN {col_name} {col_type}"
                 ))
                 conn.commit()
-            except Exception:
-                # Column already exists — safe to ignore
+            except DBAPIError:
                 conn.rollback()
+                if col_name not in existing():
+                    raise  # a real failure, not a startup race
 
-        # Backfill defaults on any existing rows that have NULLs
-        conn.execute(text(
-            "UPDATE company_settings "
-            "SET weekly_ot_threshold = 40.0 WHERE weekly_ot_threshold IS NULL"
-        ))
-        conn.execute(text(
-            "UPDATE company_settings "
-            "SET ot_multiplier = 1.5 WHERE ot_multiplier IS NULL"
-        ))
-        conn.execute(text(
-            "UPDATE company_settings "
-            "SET dt_multiplier = 2.0 WHERE dt_multiplier IS NULL"
-        ))
-        conn.execute(text(
-            "UPDATE company_settings "
-            "SET seventh_day_rule = 0 WHERE seventh_day_rule IS NULL"
-        ))
-        conn.commit()
+    # Backfill defaults on any existing rows that have NULLs
+    CS = models.CompanySettings
+    with Session(eng) as db:
+        for col, value in (
+            (CS.weekly_ot_threshold, 40.0),
+            (CS.ot_multiplier, 1.5),
+            (CS.dt_multiplier, 2.0),
+            (CS.seventh_day_rule, False),
+        ):
+            db.query(CS).filter(col.is_(None)).update({col: value}, synchronize_session=False)
+        db.commit()
 
 
 ensure_ot_columns()
