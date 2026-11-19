@@ -135,6 +135,8 @@ def list_time_entries(
                 models.Employee.supervisor_id == emp.id).all()]
             crew_ids.append(emp.id)
             query = query.filter(models.TimeEntry.employee_id.in_(crew_ids))
+        else:
+            return []  # supervisor with no employee profile sees nobody
 
     if employee_id:
         query = query.filter(models.TimeEntry.employee_id == employee_id)

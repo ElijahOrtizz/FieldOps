@@ -74,6 +74,8 @@ def get_approval_queue(
                 models.Employee.supervisor_id == emp.id).all()]
             crew_ids.append(emp.id)
             query = query.filter(models.TimeEntry.employee_id.in_(crew_ids))
+        else:
+            return []  # supervisor with no employee profile sees nobody
 
     entries = query.order_by(models.TimeEntry.date.asc()).all()
     return [entry_to_dict(e) for e in entries]
