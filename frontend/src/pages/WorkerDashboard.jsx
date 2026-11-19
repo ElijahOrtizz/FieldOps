@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { reportsApi, timeEntriesApi, scheduleApi, workerApi, jobsApi } from '../utils/api'
+import { reportsApi, timeEntriesApi, scheduleApi, workerApi, jobsApi, errMsg } from '../utils/api'
 import { StatusBadge, PageHeader, LoadingSpinner } from '../components/common'
 import WeekStatusStrip from '../components/worker/WeekStatusStrip'
 import { Clock, Plus, CheckCircle2, CalendarRange, MapPin, LogIn, LogOut, AlertCircle } from 'lucide-react'
@@ -33,7 +33,7 @@ function CorrectionModal({ entry, jobs, onClose }) {
       setDone(true)
       setTimeout(onClose, 1800)
     } catch (e) {
-      setErr(e.response?.data?.detail || 'Failed to submit')
+      setErr(errMsg(e, 'Failed to submit'))
     } finally { setSaving(false) }
   }
 
@@ -134,7 +134,7 @@ export default function WorkerDashboard() {
       setClockToast('Clocked in!')
       setTimeout(() => setClockToast(''), 3000)
     } catch (e) {
-      setClockToast(e.response?.data?.detail || 'Clock in failed')
+      setClockToast(errMsg(e, 'Clock in failed'))
       setTimeout(() => setClockToast(''), 4000)
     } finally { setClockLoading(false) }
   }
@@ -147,7 +147,7 @@ export default function WorkerDashboard() {
       setClockToast('Clocked out! Time entry submitted.')
       setTimeout(() => setClockToast(''), 3000)
     } catch (e) {
-      setClockToast(e.response?.data?.detail || 'Clock out failed')
+      setClockToast(errMsg(e, 'Clock out failed'))
       setTimeout(() => setClockToast(''), 4000)
     } finally { setClockLoading(false) }
   }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { exportApi, jobsApi } from '../utils/api'
+import { exportApi, jobsApi, errMsg } from '../utils/api'
 import { PageHeader, LoadingSpinner } from '../components/common'
 import { Download, AlertTriangle, CheckCircle2, FileSpreadsheet, Eye } from 'lucide-react'
 import { format, parseISO } from 'date-fns'
@@ -49,7 +49,7 @@ export default function ExportPage() {
       const r = await exportApi.preview(buildParams())
       setPreview(r.data)
     } catch (e) {
-      setError(e.response?.data?.detail || 'Failed to load preview')
+      setError(errMsg(e, 'Failed to load preview'))
       setPreview(null)
     } finally { setPreviewLoading(false) }
   }
@@ -87,7 +87,7 @@ export default function ExportPage() {
       if (e.response?.status === 404) {
         setError('No approved entries found for the selected filters.')
       } else {
-        setError(e.response?.data?.detail || 'Export failed')
+        setError(errMsg(e, 'Export failed'))
       }
     } finally { setExporting(false) }
   }

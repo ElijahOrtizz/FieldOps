@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { settingsApi } from '../utils/api'
+import { settingsApi, errMsg } from '../utils/api'
 import { PageHeader, LoadingSpinner } from '../components/common'
 import { Settings, Save, CheckCircle2 } from 'lucide-react'
 
@@ -23,7 +23,7 @@ export default function SettingsPage() {
       setSaved(true)
       setTimeout(() => setSaved(false), 3000)
     } catch (e) {
-      alert(e.response?.data?.detail || 'Error saving settings')
+      alert(errMsg(e, 'Error saving settings'))
     } finally {
       setSaving(false)
     }

@@ -12,7 +12,7 @@
  *   userRole    — 'admin'|'supervisor'|'worker'
  */
 import { useState, useEffect } from 'react'
-import { timeEntriesApi } from '../../utils/api'
+import { timeEntriesApi, errMsg } from '../../utils/api'
 import { X, Clock, AlertTriangle, ChevronDown, ChevronRight } from 'lucide-react'
 import { format, parseISO } from 'date-fns'
 
@@ -131,7 +131,7 @@ export default function TimeEntryEditModal({
       })
       onClose()
     } catch (e) {
-      setError(e.response?.data?.detail || 'Error saving entry')
+      setError(errMsg(e, 'Error saving entry'))
     } finally {
       setSaving(false)
     }

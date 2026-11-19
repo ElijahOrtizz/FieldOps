@@ -1,8 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import {
   reportsApi, employeesApi, jobsApi, costCodesApi,
-  approvalsApi, payrollLocksApi, timeEntriesApi
-} from '../utils/api'
+  approvalsApi, payrollLocksApi, timeEntriesApi, errMsg } from '../utils/api'
 import { useAuth } from '../context/AuthContext'
 import { PageHeader, LoadingSpinner, EmptyState } from '../components/common'
 import TimeEntryEditModal from '../components/common/TimeEntryEditModal'
@@ -669,7 +668,7 @@ export default function WeeklyTimecardsPage() {
       showToast(action === 'approve' ? 'Entry approved' : action === 'reject' ? 'Entry rejected' : 'Flagged for correction')
       load()
     } catch (e) {
-      showToast(e.response?.data?.detail || `Error: ${action}`, 'error')
+      showToast(errMsg(e, `Error: ${action}`), 'error')
     }
   }
 
@@ -679,7 +678,7 @@ export default function WeeklyTimecardsPage() {
       const r = await approvalsApi.approveWeek({ week_start: weekStart, employee_id: empId, day_date: dayDate })
       showToast(`Approved ${r.data.count} entr${r.data.count === 1 ? 'y' : 'ies'}`)
       load()
-    } catch (e) { showToast(e.response?.data?.detail || 'Error', 'error') }
+    } catch (e) { showToast(errMsg(e, 'Error'), 'error') }
     finally { setApproving(false) }
   }
 
@@ -689,7 +688,7 @@ export default function WeeklyTimecardsPage() {
       const r = await approvalsApi.approveWeek({ week_start: weekStart, employee_id: empId })
       showToast(`Approved ${r.data.count} entr${r.data.count === 1 ? 'y' : 'ies'}`)
       load()
-    } catch (e) { showToast(e.response?.data?.detail || 'Error', 'error') }
+    } catch (e) { showToast(errMsg(e, 'Error'), 'error') }
     finally { setApproving(false) }
   }
 
@@ -706,7 +705,7 @@ export default function WeeklyTimecardsPage() {
       const r = await approvalsApi.bulkApproveIds({ entry_ids: visibleSubmittedIds })
       showToast(`Approved ${r.data.count} entries`)
       load()
-    } catch (e) { showToast(e.response?.data?.detail || 'Error', 'error') }
+    } catch (e) { showToast(errMsg(e, 'Error'), 'error') }
     finally { setApproving(false) }
   }
 
@@ -719,7 +718,7 @@ export default function WeeklyTimecardsPage() {
       showToast('Week locked')
       load()
     } catch (e) {
-      const detail = e.response?.data?.detail || 'Error locking'
+      const detail = errMsg(e, 'Error locking')
       // 409 = pending entries exist — offer force lock
       if (e.response?.status === 409) {
         const forceLock = confirm(
@@ -731,7 +730,7 @@ export default function WeeklyTimecardsPage() {
             showToast('Week force-locked (pending entries remain)')
             load()
           } catch (e2) {
-            showToast(e2.response?.data?.detail || 'Force lock failed', 'error')
+            showToast(errMsg(e2, 'Force lock failed'), 'error')
           }
         }
       } else {
@@ -746,7 +745,7 @@ export default function WeeklyTimecardsPage() {
       await payrollLocksApi.unlock({ week_start: weekStart })
       showToast('Week unlocked')
       load()
-    } catch (e) { showToast(e.response?.data?.detail || 'Error unlocking', 'error') }
+    } catch (e) { showToast(errMsg(e, 'Error unlocking'), 'error') }
   }
 
   // ── Edit modal ──────────────────────────────────────────────────────────────

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { jobsApi, costCodesApi, timeEntriesApi } from '../utils/api'
+import { jobsApi, costCodesApi, timeEntriesApi, errMsg } from '../utils/api'
 import { PageHeader } from '../components/common'
 import { CheckCircle2, Clock, AlertCircle } from 'lucide-react'
 import { format, parseISO, differenceInDays } from 'date-fns'
@@ -85,7 +85,7 @@ export default function NewTimeEntry() {
       setSuccess(true)
       setTimeout(() => navigate('/worker/my-entries'), 1500)
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to submit entry')
+      setError(errMsg(err, 'Failed to submit entry'))
     } finally {
       setLoading(false)
     }
