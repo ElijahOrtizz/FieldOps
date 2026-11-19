@@ -112,6 +112,11 @@ export const reportsApi = {
   jobCostSnapshot: (weekStart) => api.get('/reports/job-cost-snapshot', { params: weekStart ? { week_start: weekStart } : {} }),
 }
 
+// Rule-based alerts: missing time, long days, job hours budgets
+export const alertsApi = {
+  get: (params = {}) => api.get('/alerts', { params }),
+}
+
 // Material requests: collection root — keep trailing slash
 export const materialRequestsApi = {
   list: (params = {}) => api.get('/material-requests/', { params }),
