@@ -79,6 +79,8 @@ def list_material_requests(
                 models.Employee.supervisor_id == emp.id).all()]
             crew_ids.append(emp.id)
             query = query.filter(models.MaterialRequest.requested_by_id.in_(crew_ids))
+        else:
+            return []  # no profile, no crew
 
     if job_id:
         query = query.filter(models.MaterialRequest.job_id == job_id)
