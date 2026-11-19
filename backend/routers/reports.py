@@ -259,6 +259,9 @@ def hours_by_employee(
                 models.Employee.supervisor_id == emp.id).all()]
             crew_ids.append(emp.id)
             query = query.filter(models.TimeEntry.employee_id.in_(crew_ids))
+        else:
+            # No employee profile: no crew, nothing to see.
+            return []
 
     results = query.all()
     output = []
@@ -315,10 +318,13 @@ def weekly_crew_report(
         models.TimeEntry.date >= week_start,
         models.TimeEntry.date <= week_end
     )
-    if current_user.role == "supervisor" and emp:
-        crew_ids = [e.id for e in db.query(models.Employee).filter(
-            models.Employee.supervisor_id == emp.id).all()]
-        query = query.filter(models.TimeEntry.employee_id.in_(crew_ids))
+    if current_user.role == "supervisor":
+        if not emp:
+            query = query.filter(models.TimeEntry.id == None)  # noqa: E711 - no profile, no crew
+        else:
+            crew_ids = [e.id for e in db.query(models.Employee).filter(
+                models.Employee.supervisor_id == emp.id).all()]
+            query = query.filter(models.TimeEntry.employee_id.in_(crew_ids))
 
     entries = query.all()
     crew_summary = {}
@@ -383,8 +389,7 @@ def weekly_timecards(
         employees = db.query(models.Employee).filter(
             models.Employee.id.in_(crew_ids),
             models.Employee.is_active == True
-        ).all() if crew_ids else db.query(models.Employee).filter(
-            models.Employee.is_active == True).all()
+        ).all() if crew_ids else []
     else:
         # Admin sees all
         employees = db.query(models.Employee).filter(models.Employee.is_active == True).all()

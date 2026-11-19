@@ -15,11 +15,12 @@ Statuses: `todo`, `in review` (branch pushed, pull request open), `done` (merged
 | 5 | Alerts API and supervisor dashboard alerts panel | in review |
 | 6 | Supervisor with no employee profile sees nothing (queue, entries, daily review), mark-absent limited to own crew | in review |
 | 7 | Startup migration safe on a fresh Postgres database | in review |
-| 8 | Same no-profile supervisor scope fix in reports.py, schedule.py and material_requests.py, with tests | todo |
+| 8 | Same no-profile supervisor scope fix in reports.py, schedule.py and material_requests.py, with tests | in review |
 | 9 | docs/DEPLOY_AWS.md: RDS PostgreSQL, App Runner with backend/Dockerfile, private S3 (S3_BUCKET, AWS_REGION), Secrets Manager (SECRET_KEY, DATABASE_URL), CORS_ORIGINS, STRYDA_ENV=prod, backups, budget alert. No invented prices. | todo |
 | 10 | CSV export split into regular, overtime and double time columns | blocked: needs column layout from Eli |
 | 11 | "Mark as exported" default behavior | blocked: needs decision from Eli |
 | 12 | Production cutover: clean demo accounts, rotate credentials | blocked: Eli only |
+| 18 | Supervisors with a profile still see company-wide data in reports.py job-cost, status-summary and job-cost-snapshot; limit those to the supervisor's crew with tests | todo |
 
 ## Phase 3: direction
 

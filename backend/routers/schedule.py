@@ -146,6 +146,8 @@ def get_weekly_schedule(
                 models.Employee.supervisor_id == emp.id).all()]
             crew_ids.append(emp.id)
             query = query.filter(models.ScheduleAssignment.employee_id.in_(crew_ids))
+        else:
+            return _empty_week(week_start)  # no profile, no crew
 
     if employee_id:
         query = query.filter(models.ScheduleAssignment.employee_id == employee_id)
@@ -461,6 +463,9 @@ def schedule_variance(
             crew_ids.append(emp.id)
             aq = aq.filter(models.ScheduleAssignment.employee_id.in_(crew_ids))
             tq = tq.filter(models.TimeEntry.employee_id.in_(crew_ids))
+        else:
+            aq = aq.filter(models.ScheduleAssignment.id == None)  # noqa: E711 - no profile, no crew
+            tq = tq.filter(models.TimeEntry.id == None)  # noqa: E711
 
     assignments = aq.all()
     time_entries = tq.all()
