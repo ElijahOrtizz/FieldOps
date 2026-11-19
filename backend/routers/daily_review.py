@@ -35,6 +35,8 @@ def daily_review(
             crew_ids = [e.id for e in db.query(models.Employee).filter(
                 models.Employee.supervisor_id == emp.id).all()]
             crew_ids.append(emp.id)
+        else:
+            crew_ids = []  # supervisor with no employee profile sees nobody
 
     def _scope_emp(q, col):
         if employee_id:
@@ -177,6 +179,15 @@ def mark_absent(
         models.ScheduleAssignment.id == data.assignment_id).first()
     if not a:
         raise HTTPException(status_code=404, detail="Assignment not found")
+    if current_user.role == "supervisor":
+        sup = current_user.employee
+        in_crew = sup is not None and (
+            a.employee_id == sup.id or
+            db.query(models.Employee).filter(
+                models.Employee.id == a.employee_id,
+                models.Employee.supervisor_id == sup.id).first() is not None)
+        if not in_crew:
+            raise HTTPException(status_code=403, detail="Assignment is outside your crew")
     a.status = "missed"
     log_action(db, current_user.id, "marked_absent",
                resource_type="schedule_assignment", resource_id=data.assignment_id,

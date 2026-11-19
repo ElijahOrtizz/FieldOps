@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { reportsApi, approvalsApi } from '../utils/api'
 import { PageHeader, StatCard, StatusBadge, LoadingSpinner } from '../components/common'
+import AlertsPanel from '../components/AlertsPanel'
 import { CheckSquare, Users, Clock, TrendingUp, ChevronRight } from 'lucide-react'
 
 export default function SupervisorDashboard() {
@@ -47,6 +48,8 @@ export default function SupervisorDashboard() {
         <StatCard label="Crew Size" value={stats?.crew_size ?? 0} sub="workers reporting to you" icon={Users} color="brand" />
         <StatCard label="Crew Hours This Week" value={stats?.crew_hours_this_week ?? 0} sub="approved hours" icon={TrendingUp} color="green" />
       </div>
+
+      <AlertsPanel />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Pending queue preview */}
