@@ -3,7 +3,9 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel, validator
 from typing import Optional, List
 from datetime import date, timedelta, datetime, timezone
-import os, uuid, shutil
+import os, uuid
+from fastapi.responses import Response
+import storage
 from database import get_db
 import models
 from auth import get_current_user, require_role
@@ -371,7 +373,31 @@ def delete_time_entry(
     return {"message": "Entry deleted"}
 
 
-@router.post("/{entry_id}/upload")
+MAX_UPLOAD_BYTES = 10 * 1024 * 1024
+ALLOWED_UPLOADS = {
+    ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png",
+    ".webp": "image/webp", ".heic": "image/heic", ".pdf": "application/pdf",
+}
+
+
+def _can_access_entry(db: Session, user: models.User, entry: models.TimeEntry) -> bool:
+    """Admins: any entry. Workers: their own. Supervisors: their crew and themselves."""
+    if user.role == "admin":
+        return True
+    emp = user.employee
+    if not emp:
+        return False
+    if entry.employee_id == emp.id:
+        return True
+    if user.role == "supervisor":
+        crew = db.query(models.Employee).filter(
+            models.Employee.id == entry.employee_id,
+            models.Employee.supervisor_id == emp.id).first()
+        return crew is not None
+    return False
+
+
+@router.post("/{entry_id:int}/upload")
 async def upload_receipt(
     entry_id: int,
     file: UploadFile = File(...),
@@ -381,25 +407,61 @@ async def upload_receipt(
     entry = db.query(models.TimeEntry).filter(models.TimeEntry.id == entry_id).first()
     if not entry:
         raise HTTPException(status_code=404, detail="Entry not found")
+    if not _can_access_entry(db, current_user, entry):
+        raise HTTPException(status_code=403, detail="Not allowed to attach files to this entry")
+    if _is_week_locked(db, entry.date) and current_user.role != "admin":
+        raise HTTPException(status_code=423, detail="Week is payroll-locked")
 
-    ext = os.path.splitext(file.filename)[1]
+    original = os.path.basename(file.filename or "receipt")
+    ext = os.path.splitext(original)[1].lower()
+    if ext not in ALLOWED_UPLOADS:
+        raise HTTPException(status_code=400, detail="Only JPG, PNG, WEBP, HEIC or PDF files are allowed")
+
+    data = await file.read(MAX_UPLOAD_BYTES + 1)
+    if len(data) > MAX_UPLOAD_BYTES:
+        raise HTTPException(status_code=413, detail="File is larger than 10 MB")
+    if not data:
+        raise HTTPException(status_code=400, detail="File is empty")
+
     unique_name = f"{uuid.uuid4()}{ext}"
-    file_path = os.path.join(UPLOAD_DIR, unique_name)
-
-    with open(file_path, "wb") as f:
-        shutil.copyfileobj(file.file, f)
+    location = storage.save(unique_name, data, ALLOWED_UPLOADS[ext])
 
     receipt = models.Receipt(
         time_entry_id=entry_id,
         filename=unique_name,
-        original_name=file.filename,
-        file_path=file_path,
-        file_size=os.path.getsize(file_path)
+        original_name=original,
+        file_path=location,
+        file_size=len(data),
+        file_type=ALLOWED_UPLOADS[ext],
+        uploaded_by_id=current_user.id,
     )
     db.add(receipt)
     db.commit()
     db.refresh(receipt)
     return {"id": receipt.id, "filename": receipt.filename, "original_name": receipt.original_name}
+
+
+@router.get("/receipts/{receipt_id}/file")
+def download_receipt(
+    receipt_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    receipt = db.query(models.Receipt).filter(models.Receipt.id == receipt_id).first()
+    if not receipt:
+        raise HTTPException(status_code=404, detail="Receipt not found")
+    entry = db.query(models.TimeEntry).filter(models.TimeEntry.id == receipt.time_entry_id).first()
+    if not entry or not _can_access_entry(db, current_user, entry):
+        raise HTTPException(status_code=403, detail="Not allowed to view this receipt")
+    try:
+        data = storage.load(receipt.file_path)
+    except Exception:
+        raise HTTPException(status_code=404, detail="Receipt file is not available")
+    return Response(
+        content=data,
+        media_type=receipt.file_type or "application/octet-stream",
+        headers={"Content-Disposition": "inline", "X-Content-Type-Options": "nosniff"},
+    )
 
 
 # ─── Phase 2.2 quick-action endpoints ─────────────────────────────────────────

@@ -115,8 +115,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-os.makedirs("uploads", exist_ok=True)
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+# Receipts are served through an authenticated API route. The public /uploads
+# folder exists only for local dev and is never mounted in production.
+if os.getenv("STRYDA_ENV") == "dev":
+    os.makedirs("uploads", exist_ok=True)
+    app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # Phase 1
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])

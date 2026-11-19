@@ -74,6 +74,10 @@ export const timeEntriesApi = {
       headers: { 'Content-Type': 'multipart/form-data' }
     })
   },
+  openReceipt: async (receiptId) => {
+    const res = await api.get(`/time-entries/receipts/${receiptId}/file`, { responseType: 'blob' })
+    window.open(URL.createObjectURL(res.data), '_blank', 'noopener')
+  },
 }
 
 // Approvals: named sub-routes — no trailing slash

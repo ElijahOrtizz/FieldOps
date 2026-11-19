@@ -300,10 +300,11 @@ export default function TimeEntryEditModal({
               <p className="label mb-1.5">Attachments</p>
               <div className="space-y-1">
                 {entry.receipts.map(r => (
-                  <a key={r.id} href={`/uploads/${r.filename}`} target="_blank" rel="noopener noreferrer"
+                  <button key={r.id} type="button"
+                    onClick={() => timeEntriesApi.openReceipt(r.id).catch(() => window.alert('Could not open attachment'))}
                     className="flex items-center gap-2 text-xs text-brand-400 hover:text-brand-300">
                     📎 {r.original_name || r.filename}
-                  </a>
+                  </button>
                 ))}
               </div>
             </div>
