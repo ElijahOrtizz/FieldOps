@@ -1,18 +1,48 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List, Literal
 from database import get_db
 import models
 from auth import get_current_user, require_role
-from routers.time_entries import entry_to_dict
+from routers.time_entries import entry_to_dict, _is_week_locked
 from audit import log_action
 
 router = APIRouter()
 
 
+EDITABLE_STATUSES = ("submitted", "needs_correction", "rejected", "approved")
+MAX_ENTRY_HOURS = 24
+
+
+def _status_str(entry) -> str:
+    return entry.status.value if hasattr(entry.status, "value") else str(entry.status)
+
+
+def _crew_ids(db: Session, user: models.User):
+    """Employee ids a supervisor may act on (their crew plus themselves). None = no limit."""
+    if user.role != "supervisor":
+        return None
+    emp = user.employee
+    if not emp:
+        return set()
+    ids = {e.id for e in db.query(models.Employee).filter(
+        models.Employee.supervisor_id == emp.id).all()}
+    ids.add(emp.id)
+    return ids
+
+
+def _block_reason(db: Session, entry, crew) -> Optional[tuple]:
+    """Return (http_status, message) if this entry may not be changed, else None."""
+    if crew is not None and entry.employee_id not in crew:
+        return 403, "Entry is outside your crew"
+    if _is_week_locked(db, entry.date):
+        return 423, "Week is payroll-locked. Unlock the week before changing entries."
+    return None
+
+
 class ApprovalAction(BaseModel):
-    action: str  # approved, rejected, changes_requested
+    action: Literal["approved", "rejected", "changes_requested"]
     notes: Optional[str] = None
     job_id: Optional[int] = None
     cost_code_id: Optional[int] = None
@@ -26,7 +56,7 @@ class SupervisorEdit(BaseModel):
     total_hours: Optional[float] = None
     pay_type: Optional[str] = None
     notes: Optional[str] = None
-    status: Optional[str] = None
+    status: Optional[Literal["submitted", "needs_correction", "rejected", "approved"]] = None
     reason: Optional[str] = None
 
 
@@ -60,6 +90,14 @@ def supervisor_edit_entry(
     entry = db.query(models.TimeEntry).filter(models.TimeEntry.id == entry_id).first()
     if not entry:
         raise HTTPException(status_code=404, detail="Entry not found")
+
+    blocked = _block_reason(db, entry, _crew_ids(db, current_user))
+    if blocked:
+        raise HTTPException(status_code=blocked[0], detail=blocked[1])
+    if _status_str(entry) not in EDITABLE_STATUSES:
+        raise HTTPException(status_code=400, detail="Entry cannot be edited in its current state")
+    if data.total_hours is not None and not (0 < data.total_hours <= MAX_ENTRY_HOURS):
+        raise HTTPException(status_code=422, detail=f"Hours must be between 0 and {MAX_ENTRY_HOURS}")
 
     # Capture old values for audit
     old = {
@@ -123,7 +161,10 @@ def process_approval(
     entry = db.query(models.TimeEntry).filter(models.TimeEntry.id == entry_id).first()
     if not entry:
         raise HTTPException(status_code=404, detail="Entry not found")
-    if entry.status not in ["submitted", "rejected", "needs_correction"]:
+    blocked = _block_reason(db, entry, _crew_ids(db, current_user))
+    if blocked:
+        raise HTTPException(status_code=blocked[0], detail=blocked[1])
+    if _status_str(entry) not in ["submitted", "rejected", "needs_correction"]:
         raise HTTPException(status_code=400, detail="Entry is not in a reviewable state")
 
     emp = current_user.employee
@@ -179,10 +220,13 @@ def bulk_approve(
     if not emp:
         raise HTTPException(status_code=400, detail="No employee profile linked")
 
+    crew = _crew_ids(db, current_user)
     approved = []
     for entry_id in entry_ids:
         entry = db.query(models.TimeEntry).filter(models.TimeEntry.id == entry_id).first()
-        if entry and entry.status in ["submitted", "needs_correction"]:
+        if entry and _block_reason(db, entry, crew):
+            continue
+        if entry and _status_str(entry) in ["submitted", "needs_correction"]:
             entry.status = "approved"
             old = db.query(models.Approval).filter(models.Approval.time_entry_id == entry_id).first()
             if old:
@@ -225,12 +269,20 @@ def bulk_approve_by_ids(
     if not emp:
         raise HTTPException(status_code=400, detail="No employee profile linked")
 
+    crew = _crew_ids(db, current_user)
     approved = []
     skipped = []
+    skipped_reasons = {}
     for entry_id in data.entry_ids:
         entry = db.query(models.TimeEntry).filter(models.TimeEntry.id == entry_id).first()
         if not entry:
             skipped.append(entry_id)
+            skipped_reasons[entry_id] = "not found"
+            continue
+        blocked = _block_reason(db, entry, crew)
+        if blocked:
+            skipped.append(entry_id)
+            skipped_reasons[entry_id] = blocked[1]
             continue
         cur = entry.status.value if hasattr(entry.status, "value") else str(entry.status)
         if cur not in ["submitted", "needs_correction"]:
@@ -256,7 +308,8 @@ def bulk_approve_by_ids(
         approved.append(entry_id)
 
     db.commit()
-    return {"approved": approved, "skipped": skipped, "count": len(approved)}
+    return {"approved": approved, "skipped": skipped,
+            "skipped_reasons": skipped_reasons, "count": len(approved)}
 
 
 class WeekApprovalRequest(BaseModel):
@@ -285,6 +338,12 @@ def approve_week(
         raise HTTPException(status_code=422, detail="Invalid week_start date")
 
     we = ws + timedelta(days=6)
+
+    if _is_week_locked(db, ws):
+        raise HTTPException(status_code=423, detail="Week is payroll-locked. Unlock the week before approving.")
+    crew = _crew_ids(db, current_user)
+    if crew is not None and data.employee_id and data.employee_id not in crew:
+        raise HTTPException(status_code=403, detail="Employee is outside your crew")
 
     query = db.query(models.TimeEntry).filter(
         models.TimeEntry.date >= ws,
